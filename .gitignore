@@ -1,0 +1,13 @@
+# npm and node
+/node_modules
+node_modules
+
+# env vars
+*env*
+
+# vite cache
+.vite/
+
+# mac files
+.DS_Store
+*DS_Store
