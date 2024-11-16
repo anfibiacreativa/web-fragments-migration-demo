@@ -1,0 +1,11 @@
+<div class="card product-card">
+    <img [src]="product.imageUrl" [alt]="product.name" class="product-image">
+    <div class="product-info">
+      <h3>{{ product.name }}</h3>
+      <app-star-rating [rating]="product.rating"/>
+      <p class="price">${{ product.price.toFixed(2) }}</p>
+      @if (!detailed) {
+        <button class="btn btn-primary" (click)="addToCart()">Add to Cart</button>
+      }
+    </div>
+  </div>

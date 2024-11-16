@@ -1,0 +1,13 @@
+<div class="container">
+    <a routerLink="/" class="back-link">← Back to Catalog</a>
+    <div class="layout">
+      @if (product) {
+        <app-product-detail [product]="product"/>
+      } @else {
+        <p>Product not found</p>
+      }
+      <aside class="cart-sidebar">
+        <app-shopping-cart/>
+      </aside>
+    </div>
+  </div>

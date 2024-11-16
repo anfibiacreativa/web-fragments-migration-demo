@@ -1,0 +1,22 @@
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.cart-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin: 1rem 0;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}

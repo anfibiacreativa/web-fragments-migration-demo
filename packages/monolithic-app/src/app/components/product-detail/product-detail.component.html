@@ -1,0 +1,16 @@
+<div class="product-detail">
+    <div class="product-image">
+      <img [src]="product.imageUrl" [alt]="product.name">
+    </div>
+    <div class="product-info">
+      <h1>{{ product.name }}</h1>
+      <app-star-rating [rating]="product.rating"/>
+      <p class="price">${{ product.price.toFixed(2) }}</p>
+      <div class="product-meta">
+        <p><strong>Color:</strong> {{ product.color }}</p>
+        <p><strong>Size:</strong> {{ product.size }}</p>
+      </div>
+      <p class="description">{{ product.description }}</p>
+      <button class="btn btn-primary" (click)="addToCart()">Add to Cart</button>
+    </div>
+  </div>
