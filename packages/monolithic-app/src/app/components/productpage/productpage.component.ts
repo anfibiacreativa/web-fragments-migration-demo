@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
 import { ShoppingCartComponent } from '../shopping-cart/shopping-cart.component';
-import { ProductService } from './product.service';
+import { ProductService } from '../../shared/services/product.service';
 
 @Component({
   selector: 'app-product',
   standalone: true,
   imports: [CommonModule, RouterLink, ProductDetailComponent, ShoppingCartComponent],
-  templateUrl: './productpage.component.html', 
+  templateUrl: './productpage.component.html',
   styleUrl: './productpage.component.css'
 })
 export class ProductPageComponent {
