@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { ShoppingCartComponent } from '../shopping-cart/shopping-cart.component';
-import { ProductService } from '../productpage/product.service';
+import { ProductService } from '../../shared/services/product.service';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +14,6 @@ import { ProductService } from '../productpage/product.service';
 })
 export class HomePageComponent {
   constructor(private productService: ProductService) {}
-  
+
   products = this.productService.getProducts();
 }

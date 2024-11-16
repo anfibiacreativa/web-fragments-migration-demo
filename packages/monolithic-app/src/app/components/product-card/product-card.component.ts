@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../models/product.model';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
-import { ShoppingCartService } from '../shopping-cart/shopping-cart.service';
+import { ShoppingCartService } from '../../shared/services/shopping-cart.service';
 
 @Component({
   selector: 'app-product-card',

@@ -25,6 +25,7 @@
       <div class="cart-summary">
         <p class="total">Total: ${{ total().toFixed(2) }}</p>
         <button class="btn btn-primary" (click)="checkout()">Proceed to Checkout</button>
+        <div *ngIf="isError" class="errorMessage"><span>${{messageError}}</span></div>
       </div>
     }
   </div>
