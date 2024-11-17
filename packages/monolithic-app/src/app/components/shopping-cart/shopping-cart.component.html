@@ -3,9 +3,9 @@
     @if (items().length === 0) {
       <p>Your cart is empty</p>
     } @else {
-      <div class="cart-items">
+      <ul class="cart-items">
         @for (item of items(); track item.product.id) {
-          <div class="cart-item">
+          <li class="cart-item">
             <img [src]="item.product.imageUrl" [alt]="item.product.name">
             <div class="item-details">
               <h3>{{ item.product.name }}</h3>
@@ -19,9 +19,9 @@
                 </div>
                 <button class="btn remove-btn" (click)="removeItem(item.product.id)">×</button>
             </div>
-          </div>
+          </li>
         }
-      </div>
+      </ul>
       <div class="cart-summary">
         <p class="total">Total: ${{ total().toFixed(2) }}</p>
         <button class="btn btn-primary" (click)="checkout()">Proceed to Checkout</button>
