@@ -13,7 +13,6 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            // TOOD: turn back on once we are done messing around
             "optimization": false,
             "outputPath": "dist/angular-shell-app",
             "index": "src/index.html",
