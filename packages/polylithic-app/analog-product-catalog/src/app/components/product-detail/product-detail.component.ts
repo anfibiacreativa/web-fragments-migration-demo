@@ -12,4 +12,9 @@ import { StarRatingComponent } from '../star-rating/star-rating.component';
 })
 export class ProductDetailComponent {
   @Input() product!: Product;
+
+  addToCart(): void {
+    // we need to implement this with the postMessage API
+    alert('Not implemented!');
+  }
 }

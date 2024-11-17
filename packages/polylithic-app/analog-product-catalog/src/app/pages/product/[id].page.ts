@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common'; // Import CommonModule
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap, of } from 'rxjs';
 import { ProductDetailComponent } from "../../components/product-detail/product-detail.component";
@@ -7,7 +7,7 @@ import { ProductService } from '../../shared/services/product.service';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, ProductDetailComponent], // Include CommonModule
+  imports: [CommonModule, ProductDetailComponent],
   template: `
     <ng-container *ngIf="product$ | async as product; else loading">
       <app-product-detail [product]="product"></app-product-detail>
@@ -37,13 +37,12 @@ export default class ProductDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly productService = inject(ProductService);
 
-  // Observable for the product details
   readonly product$ = this.route.paramMap.pipe(
-    map((params) => params.get('id')), // Extract the 'id' parameter from the route
+    map((params) => params.get('id')),
     switchMap((id) => {
-      if (!id) return of(null); // Handle case where 'id' is null
-      const product = this.productService.getProduct(Number(id)); // Use ProductService to fetch product by ID
-      return of(product); // Emit the product as an Observable
+      if (!id) return of(null);
+      const product = this.productService.getProduct(Number(id));
+      return of(product);
     })
   );
 }

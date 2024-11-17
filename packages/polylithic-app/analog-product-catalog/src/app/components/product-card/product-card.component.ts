@@ -15,4 +15,8 @@ export class ProductCardComponent {
   @Input() product!: Product;
   @Input() detailed = false;
 
+  addToCart(): void {
+    // we need to implement this with the postMessage API
+    alert('Not implemented!');
+  }
 }

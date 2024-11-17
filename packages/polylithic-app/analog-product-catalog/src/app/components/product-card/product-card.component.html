@@ -4,5 +4,6 @@
       <h3>{{ product.name }}</h3>
       <app-star-rating [rating]="product.rating"/>
       <p class="price">${{ product.price.toFixed(2) }}</p>
+      <button class="btn btn-primary" (click)="addToCart()">Add to Cart</button>
     </div>
   </div>
