@@ -1,5 +1,5 @@
 {
-  "name": "angular-shell-app",
+  "name": "@demongbe/shell-app",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
