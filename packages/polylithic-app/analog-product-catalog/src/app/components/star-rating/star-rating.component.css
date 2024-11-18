@@ -1,0 +1,10 @@
+.stars {
+    color: #ddd;
+    font-size: 1.2rem;
+  }
+  .star {
+    cursor: default;
+  }
+  .star.filled {
+    color: #ffd700;
+  }
