@@ -17,4 +17,8 @@ export class ProductService {
   getProduct(id: number) {
     return this.products().find(p => p.id === id);
   }
+
+  ngOnInit(): void {
+    console.log(this.getProducts(), '####products!');
+  }
 }
