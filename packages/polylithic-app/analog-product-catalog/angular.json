@@ -33,7 +33,7 @@
           "defaultConfiguration": "development",
           "options": {
             "buildTarget": "my-app:build",
-            "port": 4200
+            "port": 5173
           },
           "configurations": {
             "development": {

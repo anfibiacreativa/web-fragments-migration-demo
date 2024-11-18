@@ -1,0 +1,15 @@
+<div class="container">
+  <h1>Tech T-Shirts</h1>
+  <div class="layout">
+    <div class="products">
+      <div class="grid">
+        @for (product of products(); track product.id) {
+        <a [routerLink]="['/product', product.id]">
+          <app-product-card [product]="product" />
+        </a>
+        }
+      </div>
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
