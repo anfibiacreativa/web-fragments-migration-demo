@@ -1,0 +1,29 @@
+{
+  "name": "@demongbe/qwik-shopping-cart",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "qwik build",
+		"build.client": "vite build",
+		"build.preview": "vite build --ssr src/entry.preview.tsx",
+		"build.types": "tsc --incremental --noEmit",
+    "dev": "vite --mode ssr",
+    "preview": "qwik build preview && vite preview --open",
+		"start": "vite --open --mode ssr",
+		"qwik": "qwik"
+
+  },
+  "devDependencies": {
+    "@builder.io/qwik": "^1.5.7",
+    "@builder.io/qwik-city": "^1.5.7",
+    "@types/node": "^20.12.7",
+		"@typescript-eslint/eslint-plugin": "^7.7.1",
+		"@typescript-eslint/parser": "^7.7.1",
+		"eslint": "^8.57.0",
+		"eslint-plugin-qwik": "^1.5.7",
+    "typescript": "^5.5.4",
+		"vite": "^5.2.10",
+		"vite-tsconfig-paths": "^4.2.1"
+  }
+}
