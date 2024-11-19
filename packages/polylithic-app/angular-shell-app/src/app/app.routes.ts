@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { AppComponent } from './app.component';
+import { HomepageComponent } from './components/homepage-component/homepage.component';
 
 export const routes: Routes = [
-  { path: 'qwik-page', component: AppComponent },
-  { path: 'analog-page', component: AppComponent },
+  { path: 'qwik-page', component: HomepageComponent },
+  { path: 'analog-page', component: HomepageComponent },
 ];
