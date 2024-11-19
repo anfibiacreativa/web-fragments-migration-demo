@@ -11,7 +11,6 @@ export interface GatewayConfig {
 })
 export class FragmentGatewayService {
   private gateway: FragmentGateway;
-  private isRegistered = false;
 
   constructor() {
     this.gateway = new FragmentGateway({
@@ -24,25 +23,10 @@ export class FragmentGatewayService {
         </style>
       `,
     });
-
-    if (this.isBrowser() && !this.isRegistered) {
-      this.registerFragments();
-    }
-  }
-
-  private isBrowser(): boolean {
-    return typeof window !== 'undefined';
-  }
-
-  private registerFragments(): void {
-    if (this.isBrowser() && !this.isRegistered) {
-      this.isRegistered = true;
-    }
   }
 
   initializeGateway(config: GatewayConfig): void {
     this.gateway = new FragmentGateway(config);
-    this.registerFragments();
   }
 
   registerFragment(fragmentConfig: FragmentConfig): void {
