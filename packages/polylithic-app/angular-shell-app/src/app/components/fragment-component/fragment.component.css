@@ -1,0 +1,4 @@
+fragment-outlet,
+.fragment-wrapper {
+  border: 4px dotted red;
+}
