@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FragmentGateway } from 'web-fragments/gateway';
 import { FragmentConfig } from '../../models/fragmentconfig.model';
-import { register } from 'web-fragments/elements';
 
 export interface GatewayConfig {
   prePiercingStyles: string;
@@ -37,7 +36,6 @@ export class FragmentGatewayService {
 
   private registerFragments(): void {
     if (this.isBrowser() && !this.isRegistered) {
-      register();
       this.isRegistered = true;
     }
   }

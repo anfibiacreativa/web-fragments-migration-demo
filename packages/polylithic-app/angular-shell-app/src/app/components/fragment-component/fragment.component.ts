@@ -1,5 +1,5 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from '@angular/core';
-import { FragmentGatewayService } from '../../shared/services/fragament-gateway.service';
+import { FragmentGatewayService } from '../../shared/services/fragment-gateway.service';
 
 @Component({
   selector: 'app-fragment',
