@@ -10,6 +10,7 @@ import { FragmentGatewayService } from '../../shared/services/fragment-gateway.s
       <fragment-outlet [attr.fragment-id]="fragmentId" [attr.upstream-url]="upstreamUrl"></fragment-outlet>
     </div>
   `,
+  styleUrl: './fragment.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class FragmentComponent implements OnInit {
