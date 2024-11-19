@@ -22,6 +22,7 @@ export class FragmentComponent implements OnInit {
 
   constructor() {}
 
+
   ngOnInit(): void {
     if (this.fragmentId === '' || this.upstreamUrl === '') {
       console.error('Fragment needs a url and id configuration, to work');
