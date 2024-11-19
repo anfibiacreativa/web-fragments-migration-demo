@@ -4,8 +4,45 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
+import { ServerFragmentGateway } from './server-gateway'; // Adjust path as needed
 
-// The Express app is exported so that it can be used by serverless Functions.
+ServerFragmentGateway.initialize({
+  prePiercingStyles: `
+    <style id="fragment-piercing-styles" type="text/css">
+      fragment-host[data-piercing="true"] {
+        position: absolute;
+        z-index: 9999999999999999999999999999999;
+      }
+    </style>
+  `,
+});
+
+ServerFragmentGateway.registerFragment({
+  fragmentId: 'qwik',
+  prePiercingClassNames: ['qwik'],
+  routePatterns: ['/qwik-page/', '/_fragment/qwik/'],
+  upstream: 'http://localhost:5173',
+  onSsrFetchError: () => ({
+    response: new Response(
+      `<p id='qwik-fragment-not-found'>Fragment not found</p>`,
+      { headers: [['content-type', 'text/html']] }
+    ),
+  }),
+});
+
+ServerFragmentGateway.registerFragment({
+  fragmentId: 'analog',
+  prePiercingClassNames: ['analog'],
+  routePatterns: ['/analog-page/', '/_fragment/analog/'],
+  upstream: 'http://localhost:4201',
+  onSsrFetchError: () => ({
+    response: new Response(
+      `<p id='analog-fragment-not-found'>Fragment not found</p>`,
+      { headers: [['content-type', 'text/html']] }
+    ),
+  }),
+});
+
 export function app(): express.Express {
   const server = express();
   const serverDistFolder = dirname(fileURLToPath(import.meta.url));
@@ -17,8 +54,6 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // Example Express Rest API endpoints
-  // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
   server.get('**', express.static(browserDistFolder, {
     maxAge: '1y',
