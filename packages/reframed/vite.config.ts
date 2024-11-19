@@ -7,5 +7,10 @@ export default defineConfig({
 			fileName: "reframed",
 			formats: ["es"],
 		},
+		minify: false,
+		terserOptions: {
+			compress: false,
+			mangle: false
+		}
 	},
 });

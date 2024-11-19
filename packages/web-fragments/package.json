@@ -4,27 +4,27 @@
 	"type": "module",
 	"exports": {
 		"./gateway": {
-			"import": "./src/gateway/index.ts"
+			"import": "./dist/src/gateway/index.js"
 		},
 		"./gateway/middlewares/cloudflare-pages": {
 			"import": "./src/gateway/middlewares/cloudflare-pages/index.ts"
 		},
 		"./elements": {
-			"import": "./src/elements/index.ts"
+			"import": "./dist/src/elements/index.js"
 		}
 	},
 	"publishConfig": {
 		"exports": {
 			"./gateway": {
-				"import": "./dist/gateway.js",
+				"import": "./dist/src/gateway/index.js",
 				"types": "./dist/gateway/index.d.ts"
 			},
 			"./gateway/middlewares/cloudflare-pages": {
-				"import": "./dist/gateway/middlewares/cloudflare-pages.js",
+				"import": "./dist/src/gateway/middlewares/cloudflare-pages.js",
 				"types": "./dist/gateway/middlewares/cloudflare-pages/index.d.ts"
 			},
 			"./elements": {
-				"import": "./dist/elements.js",
+				"import": "./dist/src/elements/index.js",
 				"types": "./dist/elements/index.d.ts"
 			}
 		}
@@ -40,7 +40,7 @@
 		"types:gateway": "tsc -p src/gateway",
 		"types:middlewares:cloudflare-pages": "tsc -p src/gateway/middlewares/cloudflare-pages",
 		"types:root": "tsc -p .",
-		"types:check": "pnpm types --noEmit --emitDeclarationOnly false",
+		"types:check": "pnpm types",
 		"types": "pnpm run --filter web-fragments --parallel \"/^types:(?!check).*/\""
 	},
 	"dependencies": {

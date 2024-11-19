@@ -1,8 +1,13 @@
 {
 	"name": "reframed",
-	"version": "0.1.2",
+	"version": "0.0.13",
 	"type": "module",
 	"module": "index.ts",
+  "exports": {
+    "./reframed": {
+      "import": "./dist/reframed.js"
+    }
+  },
 	"publishConfig": {
 		"module": "dist/reframed.js"
 	},
@@ -13,7 +18,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@playwright/test": "^1.46.0",
-		"writable-dom": "github:web-fragments/writable-dom#build-improvements",
+		"writable-dom": "workspace:*",
 		"typescript": "^5.5.4",
 		"vite": "^5.2.0"
 	},

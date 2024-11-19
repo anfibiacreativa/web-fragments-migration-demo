@@ -12,6 +12,9 @@ dist/
 # vite cache
 .vite/
 
+# angular cache
+.angular/
+
 # mac files
 .DS_Store
 *DS_Store
