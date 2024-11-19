@@ -3,9 +3,9 @@
 	"compilerOptions": {
 		"declaration": false,
 		"emitDeclarationOnly": false,
-		"noEmit": true,
+		"noEmit": false,
 		"rootDir": ".",
-		"lib": ["ESNext"]
+		"lib": ["ESNext", "DOM", "DOM.Iterable", "DOM.AsyncIterable"]
 	},
-	"files": ["vite.config.ts"]
+  "include": ["src/**/*", "vite.config.ts"]
 }
