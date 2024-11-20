@@ -4,9 +4,11 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
-import { ServerFragmentGateway } from './server-gateway';
+import { ServerFragmentGateway, FragmentConfig } from './server-gateway';
 
-ServerFragmentGateway.initialize({
+const fragmentGateway = new ServerFragmentGateway();
+
+fragmentGateway.initialize({
   prePiercingStyles: `
     <style id="fragment-piercing-styles" type="text/css">
       fragment-host[data-piercing="true"] {
@@ -17,10 +19,11 @@ ServerFragmentGateway.initialize({
   `,
 });
 
-ServerFragmentGateway.registerFragment({
+// register fragment qwik
+fragmentGateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: ['/qwik-page/*'],
+  routePatterns: ["/qwik-page/:_*", "/_fragment/qwik/:_*"],
   upstream: 'http://localhost:5173',
   onSsrFetchError: () => ({
     response: new Response(
@@ -30,10 +33,11 @@ ServerFragmentGateway.registerFragment({
   }),
 });
 
-ServerFragmentGateway.registerFragment({
+// register fragment analog
+fragmentGateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
-  routePatterns: ['/analog-page/*'],
+  routePatterns: ['/analog-page/.*'],
   upstream: 'http://localhost:4201',
   onSsrFetchError: () => ({
     response: new Response(
@@ -60,17 +64,37 @@ export function app(): express.Express {
     index: 'index.html',
   }));
 
-  // All regular routes use the Angular engine
+  // middleware to handle fragments
   server.get('**', (req, res, next) => {
-    const { protocol, originalUrl, baseUrl, headers } = req;
+    const url = req.originalUrl;
 
+    // iterate over all registered fragments to find a match
+    for (const fragment of fragmentGateway.getAllFragments().values()) {
+      console.log(fragment, ' ####fragment ');
+      if (fragment.routePatterns.some((pattern) => new RegExp(pattern).test(url))) {
+        fetch(fragment.upstream + url)
+          .then((fetchResponse) => {
+            if (!fetchResponse.ok) throw new Error('Upstream fetch failed');
+            return fetchResponse.text();
+          })
+          .then((html) => res.send(html))
+          .catch(() => {
+            const errorResponse = fragment.onSsrFetchError();
+            errorResponse.response.text().then((html) => res.send(html));
+          });
+
+        return;
+      }
+    }
+
+    // fall back to Angular server-side rendering
     commonEngine
       .render({
         bootstrap,
         documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
+        url: `${req.protocol}://${req.headers.host}${url}`,
         publicPath: browserDistFolder,
-        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+        providers: [{ provide: APP_BASE_HREF, useValue: req.baseUrl }],
       })
       .then((html) => res.send(html))
       .catch((err) => next(err));
@@ -82,7 +106,7 @@ export function app(): express.Express {
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
-  // Start up the Node server
+  // start up the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
