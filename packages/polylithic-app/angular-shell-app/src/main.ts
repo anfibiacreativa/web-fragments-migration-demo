@@ -8,7 +8,7 @@ if (isBrowser) {
   import('web-fragments/elements').then(({ register }) => {
     register();
   }).catch((error) => {
-    console.error('Error registering fragments:', error);
+    console.error('Error registering custom elements for web-fragments outlet and host:', error);
   });
 }
 
