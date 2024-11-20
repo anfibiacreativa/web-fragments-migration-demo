@@ -4,12 +4,12 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, Input, OnInit } from '@angular/core'
   selector: 'app-fragment',
   standalone: true,
   template: `
-    <div class="fragment-wrapper">
+    <div class="fragment-container pierced">
       <h2>{{ fragmentId }} Fragment</h2>
-      <fragment-outlet [attr.fragment-id]="fragmentId" [attr.upstream-url]="upstreamUrl"></fragment-outlet>
-      @if (showHost) {
+      <fragment-outlet [attr.fragment-id]="fragmentId"></fragment-outlet>
+<!--       @if (showHost) {
         <fragment-host></fragment-host>
-      }
+      } -->
     </div>
   `,
   styleUrl: './fragment.component.css',
