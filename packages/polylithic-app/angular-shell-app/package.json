@@ -10,6 +10,10 @@
     "serve:ssr:angular-shell-app": "node dist/angular-shell-app/server/server.mjs"
   },
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "engineStrict": true,
   "dependencies": {
     "@angular/animations": "^18.0.0",
     "@angular/common": "^18.0.0",
