@@ -4,7 +4,7 @@ import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import bootstrap from './src/main.server';
-import { ServerFragmentGateway } from './server-gateway'; // Adjust path as needed
+import { ServerFragmentGateway } from './server-gateway';
 
 ServerFragmentGateway.initialize({
   prePiercingStyles: `
@@ -20,7 +20,7 @@ ServerFragmentGateway.initialize({
 ServerFragmentGateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: ['/qwik-page/', '/_fragment/qwik/'],
+  routePatterns: ['/qwik-page/*'],
   upstream: 'http://localhost:5173',
   onSsrFetchError: () => ({
     response: new Response(
@@ -33,7 +33,7 @@ ServerFragmentGateway.registerFragment({
 ServerFragmentGateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
-  routePatterns: ['/analog-page/', '/_fragment/analog/'],
+  routePatterns: ['/analog-page/*'],
   upstream: 'http://localhost:4201',
   onSsrFetchError: () => ({
     response: new Response(
