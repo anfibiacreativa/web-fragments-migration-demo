@@ -9,9 +9,13 @@ export default function (opts: RenderToStreamOptions) {
 	return renderToStream(<Root />, {
 		manifest,
 		...opts,
-
+    base: "/_fragment/qwik/assets/build",
 		// needed for reframing/fragmenting
 		containerTagName: "qwik-fragment",
+    serverData: {
+			...opts.serverData,
+			url: "http://localhost:4208/qwik-page",
+		},
 		qwikLoader: {
 			include: "always",
 			position: "bottom",
@@ -21,9 +25,6 @@ export default function (opts: RenderToStreamOptions) {
 		containerAttributes: {
 			lang: "en-us",
 			...opts.containerAttributes,
-		},
-		serverData: {
-			...opts.serverData,
 		},
 	});
 }
