@@ -1,5 +1,5 @@
 {
-  "name": "@demongbe/shell-app",
+  "name": "angular-shell-app",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

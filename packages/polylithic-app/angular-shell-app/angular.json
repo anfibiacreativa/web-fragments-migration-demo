@@ -74,10 +74,7 @@
               "buildTarget": "angular-shell-app:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "port": 4208
-          }
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"

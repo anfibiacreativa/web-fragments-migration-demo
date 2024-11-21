@@ -1,6 +1,0 @@
-{
-	"files": ["index.ts"],
-  "exclude": [
-    "./src/reframed.ts"
-  ]
-}
