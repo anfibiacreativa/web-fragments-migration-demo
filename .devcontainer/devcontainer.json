@@ -1,0 +1,42 @@
+{
+  "name": "Angular + Analog.js + Qwik DevContainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+      "vscode": {
+        "settings": {
+           "terminal.integrated.defaultProfile.linux": "zsh"
+        },
+        "extensions": [
+          "esbenp.prettier-vscode",
+          "dbaeumer.vscode-eslint",
+          "Angular.ng-template",
+          "steoates.autoimport",
+          "ecmel.vscode-html-css",
+          "fwcd.typescript",
+          "ms-vscode.live-server"
+        ]
+      }
+  },
+  "postCreateCommand": "pnpm install",
+  "remoteUser": "node", // Use the "node" user provided by the Node.js image
+  "portsAttributes": {
+    "4208": {
+      "label": "Angular Shell Dev Server",
+      "onAutoForward": "openBrowser"
+    },
+    "4200":  {
+      "label": "Analog e-commerce shop (upstream)",
+      "onAutoForward": "openBrowser"
+    },
+    "5173":  {
+      "label": "Qwik Shopping Cart (upstream)",
+      "onAutoForward": "openBrowser"
+    },
+    "4000":  {
+      "label": "Angular SSR server",
+      "onAutoForward": "openBrowser"
+    }
+  }
+}
