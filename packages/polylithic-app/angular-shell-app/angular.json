@@ -31,12 +31,7 @@
             ],
             "scripts": [
               "node_modules/@webcomponents/custom-elements/custom-elements.min.js"
-            ],
-            "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            ]
           },
           "configurations": {
             "production": {
@@ -64,6 +59,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "port": 4208
+          },
           "configurations": {
             "production": {
               "buildTarget": "angular-shell-app:build:production"
@@ -72,10 +70,7 @@
               "buildTarget": "angular-shell-app:build:development"
             }
           },
-          "defaultConfiguration": "development",
-          "options": {
-            "port": 4208
-          }
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"
