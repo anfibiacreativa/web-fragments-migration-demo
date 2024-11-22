@@ -43,7 +43,7 @@ fragmentGateway.registerFragment({
   upstream: 'http://localhost:4200',
   onSsrFetchError: () => ({
     response: new Response(
-      `<p id='analog-fragment-not-found'>Fragment not found</p>`,
+      `<p id='analog-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
       { headers: [['content-type', 'text/html']] }
     ),
   }),
