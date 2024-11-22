@@ -21,7 +21,7 @@ export class QwikPageComponent {
       imageUrl: 'https://placehold.co/300x400',
       rating: 4.9,
     };
-    
+
     const bc = new BroadcastChannel("/cart");
     console.log('broadcasting add_to_cart to /cart channel', product);
     bc.postMessage({ type: 'add_to_cart', product });
