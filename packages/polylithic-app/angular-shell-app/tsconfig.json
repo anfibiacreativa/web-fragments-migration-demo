@@ -3,8 +3,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "types": [],
-    "outDir": "./dist/out-tsc",
+    "types": ["node"],
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -18,9 +17,10 @@
     "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ESNext",
-    "module": "ESNext",
+    "module": "ES2022",
     "useDefineForClassFields": false,
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"]
   },
   "angularCompilerOptions": {

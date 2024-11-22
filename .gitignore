@@ -21,3 +21,6 @@ dist/
 
 # nx
 .nx/
+
+# server
+packages/payment-service/src/server
