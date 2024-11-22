@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import { ServerFragmentGateway } from './_middleware/middleware';
 import { Readable } from 'stream';
+import { read } from 'fs';
 
 const fragmentGateway = new ServerFragmentGateway();
 
@@ -22,6 +23,7 @@ fragmentGateway.registerFragment({
   prePiercingClassNames: ['qwik'],
   routePatterns: [
     '/qwik-page/?',
+    '/ecommerce-page/?',
     '/_fragment/qwik/?'
   ],
   upstream: 'http://localhost:5173',
@@ -38,7 +40,8 @@ fragmentGateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
   routePatterns: [
-    '/analog-page/?'
+    '/analog-page/?',
+    '/ecommerce-page/?',
   ],
   upstream: 'http://localhost:4200',
   onSsrFetchError: () => ({
@@ -95,6 +98,7 @@ export function app(): express.Express {
             }
 
             const readableStream = fetchResponse.body as ReadableStream<Uint8Array>;
+            console.log('### Fragment stream: ', readableStream);
 
             if (readableStream) {
               const stream = Readable.fromWeb(readableStream as any);
