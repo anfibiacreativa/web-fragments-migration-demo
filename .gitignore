@@ -7,7 +7,7 @@ dist
 dist/
 
 # env vars
-*env*
+.env*
 
 # vite cache
 .vite/
