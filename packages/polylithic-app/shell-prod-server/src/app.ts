@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import { ServerFragmentGateway } from './_middleware/middleware';
 import { Readable } from 'stream';
-import { read } from 'fs';
 
 const fragmentGateway = new ServerFragmentGateway();
 
@@ -60,14 +59,14 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // serve angular static entry point
+  // serve Angular static entry point
   server.use(express.static(browserDistFolder, {
     maxAge: '1y',
     index: 'index.html',
   }));
 
-  // handle fragments with streaming
-  server.get('**', (req, res, next) => {
+  // handle fragments asynchronously
+  server.use(async (req, res, next) => {
     const url = req.originalUrl;
 
     // iterate over registered fragments
@@ -75,49 +74,51 @@ export function app(): express.Express {
     for (const fragment of registeredFragments.values()) {
       console.log(`# FRAGMENT-${fragment.fragmentId}: `, fragment);
 
-      let matched = false;
-      // check the routePatterns
+      // Match URL with routePatterns
       for (const pattern of fragment.routePatterns) {
         const regex = new RegExp(pattern);
         if (regex.test(url)) {
-          matched = true;
+          console.log(`### Matching Fragment Found: ${fragment.fragmentId}`);
+
+          // fetch from upstream, but do not affect the Angular fallback
+          const upstreamUrl = fragment.upstream + url;
+          const fetchOptions = { method: 'GET' };
+
+          fetch(upstreamUrl, fetchOptions)
+            .then((fetchResponse) => {
+              if (!fetchResponse.ok) {
+                throw new Error('Upstream fetch failed');
+              }
+
+              const readableStream = fetchResponse.body as ReadableStream<Uint8Array>;
+              console.log(`### Upstream Response Stream for ${fragment.fragmentId}: `, readableStream);
+
+              // get the fragment chunks
+              if (readableStream) {
+                const stream = Readable.fromWeb(readableStream as any);
+                const dataChunks: Buffer[] = [];
+                stream.on('data', (chunk) => dataChunks.push(chunk));
+                stream.on('end', () => {
+                  const fragmentData = Buffer.concat(dataChunks).toString('utf8');
+                  console.log(`### Fragment Content (${fragment.fragmentId}):\n`, fragmentData);
+                });
+              }
+            })
+            .catch((error) => {
+              console.error(`### Error fetching fragment (${fragment.fragmentId}):`, error);
+            });
+
           break;
         }
       }
-
-      if (matched) {
-        // fetch from upstream and stream the response to the client
-        const upstreamUrl = fragment.upstream;
-        console.log('### upstream', upstreamUrl);
-        const fetchOptions = { method: 'GET' };
-
-        fetch(upstreamUrl, fetchOptions)
-          .then((fetchResponse) => {
-            if (!fetchResponse.ok) {
-              throw new Error('Upstream fetch failed');
-            }
-
-            const readableStream = fetchResponse.body as ReadableStream<Uint8Array>;
-            console.log('### Fragment stream: ', readableStream);
-
-            if (readableStream) {
-              const stream = Readable.fromWeb(readableStream as any);
-              stream.pipe(res);
-            }
-          })
-          .catch(() => {
-            const errorResponse = fragment.onSsrFetchError();
-            errorResponse.response.text().then((html) => {
-              res.write(html);
-              res.end();
-            });
-          });
-
-        return;
-      }
     }
 
-    // fallback to static Angular response
+    next();
+  });
+
+  // serve Angular fallback
+  server.get('**', (req, res) => {
+    console.log(`### Serving Angular app for: ${req.originalUrl}`);
     res.sendFile(path.resolve(browserDistFolder, 'index.html'));
   });
 
@@ -127,7 +128,6 @@ export function app(): express.Express {
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
-  // Start up the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
