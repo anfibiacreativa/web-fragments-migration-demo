@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import { ServerFragmentGateway } from './_middleware/middleware';
 import { Readable } from 'stream';
@@ -21,11 +22,11 @@ fragmentGateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
   routePatterns: [
-    '/qwik-page/?',
+    //'/qwik-page/?',
     '/ecommerce-page/?',
     '/_fragment/qwik/?',
   ],
-  upstream: 'http://localhost:5173',
+  upstream: 'http://localhost:4173',
   onSsrFetchError: () => ({
     response: new Response(
       `<p id='qwik-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
@@ -39,8 +40,8 @@ fragmentGateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
   routePatterns: [
-    '/analog-page/?',
-    '/ecommerce-page/?',
+    //'/analog-page/?',
+    //'/ecommerce-page/?',
   ],
   upstream: 'http://localhost:4200',
   onSsrFetchError: () => ({
@@ -55,6 +56,7 @@ export function app(): express.Express {
   const server = express();
   const serverDistFolder = path.dirname(__dirname);
   const browserDistFolder = path.resolve(serverDistFolder, './dist/angular-shell-app/browser');
+  const staticAngularIndexHtmlPath = path.resolve(browserDistFolder, 'index.html')
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
@@ -83,29 +85,62 @@ export function app(): express.Express {
         const upstreamUrl = fragment.upstream;
         console.log(`### Fetching Fragment: ${fragment.fragmentId}, Upstream: ${upstreamUrl}`);
 
-        try {
-          const fetchResponse = await fetch(upstreamUrl, { method: 'GET' });
+        console.log("Request sec-fetch-dest: ", req.headers["sec-fetch-dest"]);
 
-          if (!fetchResponse.ok) {
-            throw new Error(`Upstream fetch failed for fragment ${fragment.fragmentId}`);
-          }
+        // if fragment request from iframe initialization then return empty response
+        if (req.headers["sec-fetch-dest"] === "iframe") {
+            res.setHeader("Content-Type", "text/html");
+            res.write("<!doctype html><title>");
+            res.end();
+            return;
+        }
 
-          const readableStream = fetchResponse.body as ReadableStream<Uint8Array>;
+        const fetchResponse = await fetch(upstreamUrl, { method: 'GET' });
 
-          if (readableStream) {
-            const stream = Readable.fromWeb(readableStream as any);
-            console.log(`### Streaming fragment: ${fragment.fragmentId}`);
-            await new Promise((resolve) => {
-              stream.pipe(res, { end: false }).on('end', resolve);
-            });
-          }
-        } catch (error) {
-          console.error(`### Error fetching fragment (${fragment.fragmentId}):`, error);
-
-          // fallback HTML for failed fragment
+        if (!fetchResponse.ok || !fetchResponse.body) {
+          console.error(`Upstream fetch failed for fragment ${fragment.fragmentId}, response: ${fetchResponse.status}`);
           const errorResponse = fragment.onSsrFetchError();
           const errorHtml = await errorResponse.response.text();
           res.write(errorHtml);
+          res.end();
+          return;
+        }
+
+        const header = fetchResponse.headers.get("Content-Type") || 'missing/headers';
+        res.setHeader("Content-Type", header);
+        const stream = Readable.fromWeb(fetchResponse.body as any);
+
+        if (req.headers["sec-fetch-dest"] === "document") {
+          console.log(`### Serving mixture of legacy app and pierced fragment for: ${req.originalUrl}`);
+
+          const angularIndexPreamble = fs.readFileSync(staticAngularIndexHtmlPath).toString().split('</body>')[0];
+          const angularIndexEpilog = '</body></html>';
+
+
+          res.setHeader("Content-Type", "text/html");
+          res.write(angularIndexPreamble);
+
+          console.log(`### Streaming fragment: ${fragment.fragmentId}`);
+          await new Promise((resolve) => {
+            stream.pipe(res, { end: false });
+            stream.on('end', () => {
+              console.log('xxxx end of fragment stream');
+              res.end(angularIndexEpilog);
+              console.log('ended the stream');
+              resolve(null);
+            });
+          });
+
+          res.end();
+          return;
+
+        } else {
+          await new Promise((resolve) => {
+            stream.pipe(res, { end: false }).on('end', () => {
+              resolve(null);
+              res.end();
+            });
+          });
         }
       }
 
@@ -115,7 +150,8 @@ export function app(): express.Express {
 
     // fallback to Angular response if no fragments match
     console.log(`### Serving Angular app for: ${req.originalUrl}`);
-    res.sendFile(path.resolve(browserDistFolder, 'index.html'));
+    // TODO: why do we need this and also expres.static higher up??
+    res.sendFile(staticAngularIndexHtmlPath);
   });
 
   return server;

@@ -104,7 +104,7 @@ export const ShoppingCart = component$(() => {
             <ul class="cart-items">
               {cart.items.map((item) => (
                 <li key={item.product.id} class="cart-item">
-                  <img src={item.product.imageUrl} alt={item.product.name} />
+                  <img src={item.product.imageUrl} alt={item.product.name} width="80" height="80"/>
                   <div class="item-details">
                     <h3>{item.product.name}</h3>
                     <p>${item.product.price.toFixed(2)}</p>
