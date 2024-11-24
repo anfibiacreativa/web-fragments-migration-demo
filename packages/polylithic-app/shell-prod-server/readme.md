@@ -38,8 +38,6 @@ $ cd packages/polylithic-app/shell-prod-server
 $ pnpm build && pnpm start:server
 ```
 
-9 - Go to `http://localhost:4000`
-
 Click in the `Go to Qwik app` or `Go to Analog app`
 The apps are rendered but not the Angular shell page due to:
 
