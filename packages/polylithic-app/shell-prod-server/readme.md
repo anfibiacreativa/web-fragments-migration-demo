@@ -6,7 +6,7 @@
 4 - Start the Qwik app
 
 ```bash
-$ cd packages/polylithic-app/qwik-shopping cart
+$ cd packages/polylithic-app/qwik-shopping-cart
 $ pnpm build && pnpm start
 ```
 
@@ -24,14 +24,14 @@ $ cd packages/polylithic-app/angular-shell-app
 $ pnpm build:prod
 ```
 
-7 - Build and tart the server
+7 - Build and start the server
 
 ```bash
 $ cd packages/polylithic-app/shell-prod-server
 $ pnpm build && pnpm start:server
 ```
 
-8 - Go to `http:localhost:4000`
+8 - Go to `http://localhost:4000`
 
 Click in the `Go to Qwik app` or `Go to Analog app`
 The apps are rendered but not the Angular shell page due to:
