@@ -1,4 +1,4 @@
-# Migration path from Angular monolithic SPA app, to micro-frontends featuring Qwik, Analog and Angular SSR.
+# Migration path from Angular monolithic SPA app, to micro-frontends featuring Qwik and Analog.js
 
 > [!IMPORTANT]
 > README and CODE SAMPLE status is WORK IN PROGRESS
