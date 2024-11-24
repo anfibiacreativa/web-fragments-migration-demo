@@ -27,10 +27,13 @@ The user interface is composed by the following components
 
 The decoupling and migration excercise consists in horizontally splitting the monolithic UI and codebase into multiple applications that are independently developed, released, versioned and deployed, with the following correspondence,
 
-Homepage + productpage -> Shell application HTML
-Product catalog -> Micro-frontend split 1 -> Angular SSR
-Product detail -> Micro-frontend split 2 -> Analog SSG
-Shopping cart -> Micro-frontend split 3 -> Qwik 
+- Homepage + productpage -> Shell application HTML
+- Product catalog -> Micro-frontend split 1 -> Analog.js
+- Product detail -> Micro-frontend split 1 -> Analog.js
+- Shopping cart -> Micro-frontend split 2 -> Qwik
+
+![web-fragments drawio](https://github.com/user-attachments/assets/e088f739-6418-4610-aba6-df8424040599)
+
 
 ## Come back soon! This is a work in progress
 
