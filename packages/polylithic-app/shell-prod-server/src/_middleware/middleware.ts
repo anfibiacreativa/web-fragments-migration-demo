@@ -6,7 +6,7 @@ export interface FragmentConfig {
   onSsrFetchError: () => { response: Response };
 }
 
-export class ServerFragmentGateway {
+export class FragmentGateway {
   private prePiercingStyles: string | null = null;
   private fragments: Map<string, FragmentConfig> = new Map();
 

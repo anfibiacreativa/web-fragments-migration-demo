@@ -349,6 +349,9 @@ importers:
       express:
         specifier: ^4.18.2
         version: 4.21.1
+      web-fragments:
+        specifier: ^0.1.1
+        version: 0.1.1(@cloudflare/workers-types@4.20241112.0)
     devDependencies:
       '@types/express':
         specifier: ^4.17.17
