@@ -1,10 +1,11 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { ServerFragmentGateway } from './_middleware/middleware';
+import { FragmentGateway } from './_middleware/middleware';
+import { getMiddleware } from './_middleware/fragment-express-middleware';
 import { Readable } from 'stream';
 
-const fragmentGateway = new ServerFragmentGateway();
+const fragmentGateway = new FragmentGateway();
 
 fragmentGateway.initialize({
   prePiercingStyles: `
@@ -67,6 +68,8 @@ export function app(): express.Express {
     index: 'index.html',
   }));
 
+  server.use(getMiddleware(fragmentGateway));
+
   // handle fragments with streaming
   server.get('**', async (req, res) => {
     const url = req.originalUrl;
@@ -123,15 +126,10 @@ export function app(): express.Express {
           console.log(`### Streaming fragment: ${fragment.fragmentId}`);
           await new Promise((resolve) => {
             stream.pipe(res, { end: false });
-            stream.on('end', () => {
-              console.log('xxxx end of fragment stream');
-              res.end(angularIndexEpilog);
-              console.log('ended the stream');
-              resolve(null);
-            });
+            stream.on('end', resolve);
           });
 
-          res.end();
+          res.end(angularIndexEpilog);
           return;
 
         } else {
