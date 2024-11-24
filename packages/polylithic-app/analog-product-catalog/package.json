@@ -26,6 +26,7 @@
     "@angular/platform-browser": "^18.0.0",
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/platform-server": "^18.0.0",
+    "@angular-devkit/architect": "^0.1500.0",
     "@angular/router": "^18.0.0",
     "front-matter": "^4.0.2",
     "marked": "^5.0.2",

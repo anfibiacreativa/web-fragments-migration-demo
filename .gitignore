@@ -7,10 +7,13 @@ dist
 dist/
 
 # env vars
-*env*
+.env*
 
 # vite cache
 .vite/
+
+# angular cache
+.angular/
 
 # mac files
 .DS_Store
@@ -18,3 +21,6 @@ dist/
 
 # nx
 .nx/
+
+# server
+packages/payment-service/src/server
