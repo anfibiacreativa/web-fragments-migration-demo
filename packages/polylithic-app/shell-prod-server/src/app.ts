@@ -1,164 +1,150 @@
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
-import { FragmentGateway } from './_middleware/middleware';
-import { getMiddleware } from './_middleware/fragment-express-middleware';
-import { Readable } from 'stream';
+import { getMiddleware } from './_middleware/fragment-express-middleware.js';
+import { FragmentGateway, FragmentConfig } from 'web-fragments/gateway';
+import { Readable, Writable } from 'stream';
 
-const fragmentGateway = new FragmentGateway();
-
-fragmentGateway.initialize({
-  prePiercingStyles: `
-    <style id="fragment-piercing-styles" type="text/css">
-      fragment-host[data-piercing="true"] {
-        position: absolute;
-        z-index: 9999999999999999999999999999999;
-      }
-    </style>
-  `,
+const gateway = new FragmentGateway({
+  prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
+    fragment-host[data-piercing="true"] {
+      position: absolute;
+      z-index: 9999999999999999999999999999999;
+    }
+  </style>`,
 });
 
-// register Fragment - qwik
-fragmentGateway.registerFragment({
+// register analog fragment
+gateway.registerFragment({
+  fragmentId: 'analog',
+  prePiercingClassNames: ['analog'],
+  routePatterns: ['/analog-page/:_?'],
+  upstream: 'http://localhost:4200',
+  onSsrFetchError: () => {
+    return {
+      response: new Response(
+        `<p id="analog-fragment-not-found">
+          <style>#analog-fragment-not-found { color: red; font-size: 2rem; }</style>
+          Analog fragment not found
+        </p>`,
+        { headers: [['content-type', 'text/html']] }
+      ),
+    };
+  },
+});
+
+// register qwik fragment
+gateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: [
-    //'/qwik-page/?',
-    '/ecommerce-page/?',
-    '/_fragment/qwik/?',
-  ],
+  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*'],
   upstream: 'http://localhost:4173',
-  onSsrFetchError: () => ({
-    response: new Response(
-      `<p id='qwik-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
-      { headers: [['content-type', 'text/html']] },
-    ),
-  }),
-});
-
-// register Fragment - analog
-fragmentGateway.registerFragment({
-  fragmentId: 'analog',
-  prePiercingClassNames: ['analog'],
-  routePatterns: [
-    //'/analog-page/?',
-    //'/ecommerce-page/?',
-  ],
-  upstream: 'http://localhost:4200',
-  onSsrFetchError: () => ({
-    response: new Response(
-      `<p id='analog-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
-      { headers: [['content-type', 'text/html']] },
-    ),
-  }),
+  forwardFragmentHeaders: ['x-fragment-name'],
+  onSsrFetchError: () => {
+    return {
+      response: new Response(
+        `<p id="qwik-fragment-not-found">
+          <style>#qwik-fragment-not-found { color: red; font-size: 2rem; }</style>
+          Qwik fragment not found
+        </p>`,
+        { headers: [['content-type', 'text/html']] }
+      ),
+    };
+  },
 });
 
 export function app(): express.Express {
+  const __dirname = path.dirname(new URL(import.meta.url).pathname);
+  const browserDistFolder = path.resolve(__dirname, './dist/angular-shell-app/browser');
+  const staticAngularIndexHtmlPath = path.resolve(browserDistFolder, 'index.html');
+
+  // Create the Express server
   const server = express();
-  const serverDistFolder = path.dirname(__dirname);
-  const browserDistFolder = path.resolve(serverDistFolder, './dist/angular-shell-app/browser');
-  const staticAngularIndexHtmlPath = path.resolve(browserDistFolder, 'index.html')
 
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // serve Angular static entry point
-  server.use(express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: 'index.html',
-  }));
+  // Serve Angular static assets
+  server.use(
+    express.static(browserDistFolder, {
+      maxAge: '1y',
+      index: 'index.html',
+    })
+  );
 
-  server.use(getMiddleware(fragmentGateway));
+  // get the gateway from the express-server-middleware
+  server.use(getMiddleware(gateway));
 
-  // handle fragments with streaming
-  server.get('**', async (req, res) => {
+  // handle all requests
+  server.get('**', async (req, res, next) => {
     const url = req.originalUrl;
 
-    // find all matching fragments for this route
-    const registeredFragments = fragmentGateway.getAllFragments();
-    const matchingFragments = Array.from(registeredFragments.values()).filter(fragment =>
-      fragment.routePatterns.some(pattern => new RegExp(pattern).test(url))
-    );
+    // match the request to a fragment using `matchRequestToFragment`, instead of the previous
+    // class imported locally
+    const matchedFragment = gateway.matchRequestToFragment(req.url);
 
-    if (matchingFragments.length > 0) {
-      console.log(`### Matched Fragments: ${matchingFragments.map(f => f.fragmentId).join(', ')}`);
+    if (matchedFragment) {
+      console.log(`Matched Fragment: ${matchedFragment.fragmentId}`);
+      try {
+        const fragmentResponse = await fetchFragment(req, matchedFragment);
 
-      // stream fragments sequentially
-      for (const fragment of matchingFragments) {
-        const upstreamUrl = fragment.upstream;
-        console.log(`### Fetching Fragment: ${fragment.fragmentId}, Upstream: ${upstreamUrl}`);
+        // stream the fragment response if it matches the current route
+        if (req.headers['sec-fetch-dest'] === 'document') {
+          const angularIndexHtml = fs
+            .readFileSync(staticAngularIndexHtmlPath)
+            .toString()
+            .split('</body>')[0];
+          res.setHeader('Content-Type', 'text/html');
+          res.write(angularIndexHtml);
 
-        console.log("Request sec-fetch-dest: ", req.headers["sec-fetch-dest"]);
+          const stream = Readable.fromWeb(fragmentResponse.body as any);
+          stream.pipe(res, { end: false });
 
-        // if fragment request from iframe initialization then return empty response
-        if (req.headers["sec-fetch-dest"] === "iframe") {
-            res.setHeader("Content-Type", "text/html");
-            res.write("<!doctype html><title>");
-            res.end();
-            return;
-        }
-
-        const fetchResponse = await fetch(upstreamUrl, { method: 'GET' });
-
-        if (!fetchResponse.ok || !fetchResponse.body) {
-          console.error(`Upstream fetch failed for fragment ${fragment.fragmentId}, response: ${fetchResponse.status}`);
-          const errorResponse = fragment.onSsrFetchError();
-          const errorHtml = await errorResponse.response.text();
-          res.write(errorHtml);
-          res.end();
-          return;
-        }
-
-        const header = fetchResponse.headers.get("Content-Type") || 'missing/headers';
-        res.setHeader("Content-Type", header);
-        const stream = Readable.fromWeb(fetchResponse.body as any);
-
-        if (req.headers["sec-fetch-dest"] === "document") {
-          console.log(`### Serving mixture of legacy app and pierced fragment for: ${req.originalUrl}`);
-
-          const angularIndexPreamble = fs.readFileSync(staticAngularIndexHtmlPath).toString().split('</body>')[0];
-          const angularIndexEpilog = '</body></html>';
-
-
-          res.setHeader("Content-Type", "text/html");
-          res.write(angularIndexPreamble);
-
-          console.log(`### Streaming fragment: ${fragment.fragmentId}`);
-          await new Promise((resolve) => {
-            stream.pipe(res, { end: false });
-            stream.on('end', resolve);
-          });
-
-          res.end(angularIndexEpilog);
-          return;
-
+          stream.on('end', () => res.end('</body></html>'));
         } else {
-          await new Promise((resolve) => {
-            stream.pipe(res, { end: false }).on('end', () => {
-              resolve(null);
-              res.end();
-            });
-          });
+          res.writeHead(fragmentResponse.status, Object.fromEntries(fragmentResponse.headers));
+          fragmentResponse.body?.pipeTo(Writable.toWeb(res));
         }
+      } catch (error) {
+        console.error('Error serving fragment:', error);
+        let errorResponse = matchedFragment.onSsrFetchError?.(req.url, error);
+
+        if (errorResponse instanceof Promise) {
+          errorResponse = await errorResponse;
+        }
+
+        res.writeHead(errorResponse?.response.status || 500);
+        res.end(errorResponse?.response.body || 'Internal Server Error');
+
       }
-
-      // end the response after all fragments
-      return res.end();
+    } else {
+      console.log(`No fragment matched. Serving Angular app for: ${url}`);
+      res.sendFile(staticAngularIndexHtmlPath);
     }
-
-    // fallback to Angular response if no fragments match
-    console.log(`### Serving Angular app for: ${req.originalUrl}`);
-    // TODO: why do we need this and also expres.static higher up??
-    res.sendFile(staticAngularIndexHtmlPath);
   });
 
   return server;
 }
 
+async function fetchFragment(req: express.Request, fragmentConfig: FragmentConfig) {
+  const { upstream } = fragmentConfig;
+  const upstreamUrl = new URL(req.url, upstream);
+  const headers = new Headers(req.headers as any);
+  headers.set('sec-fetch-dest', 'empty');
+  headers.set('x-fragment-mode', 'embedded');
+
+  const fragmentRequest = new Request(upstreamUrl.toString(), {
+    method: req.method,
+    body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
+    headers,
+  });
+
+  return fetch(fragmentRequest);
+}
+
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
-  // Start up the Node server
   const server = app();
   server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
@@ -166,144 +152,3 @@ function run(): void {
 }
 
 run();
-
-
-
-/* import express from 'express';
-import path from 'path';
-import { ServerFragmentGateway } from './_middleware/middleware';
-import { Readable } from 'stream';
-import { read } from 'fs';
-
-const fragmentGateway = new ServerFragmentGateway();
-
-fragmentGateway.initialize({
-  prePiercingStyles: `
-    <style id="fragment-piercing-styles" type="text/css">
-      fragment-host[data-piercing="true"] {
-        position: absolute;
-        z-index: 9999999999999999999999999999999;
-      }
-    </style>
-  `,
-});
-
-// register Fragment - qwik
-fragmentGateway.registerFragment({
-  fragmentId: 'qwik',
-  prePiercingClassNames: ['qwik'],
-  routePatterns: [
-    '/qwik-page/?',
-    '/ecommerce-page/?',
-    '/_fragment/qwik/?'
-  ],
-  upstream: 'http://localhost:5173',
-  onSsrFetchError: () => ({
-    response: new Response(
-      `<p id='qwik-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
-      { headers: [['content-type', 'text/html']] }
-    ),
-  }),
-});
-
-// register Fragment - analog
-fragmentGateway.registerFragment({
-  fragmentId: 'analog',
-  prePiercingClassNames: ['analog'],
-  routePatterns: [
-    '/analog-page/?',
-    '/ecommerce-page/?',
-  ],
-  upstream: 'http://localhost:4200',
-  onSsrFetchError: () => ({
-    response: new Response(
-      `<p id='analog-fragment-not-found'>Fragment not found</p><a href="/">Go back</a>`,
-      { headers: [['content-type', 'text/html']] }
-    ),
-  }),
-});
-
-export function app(): express.Express {
-  const server = express();
-  const serverDistFolder = path.dirname(__dirname);
-  const browserDistFolder = path.resolve(serverDistFolder, './dist/angular-shell-app/browser');
-
-  server.set('view engine', 'html');
-  server.set('views', browserDistFolder);
-
-  // serve angular static entry point
-  server.use(express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: 'index.html',
-  }));
-
-  // handle fragments with streaming
-  server.get('**', (req, res, next) => {
-    const url = req.originalUrl;
-
-    // iterate over registered fragments
-    const registeredFragments = fragmentGateway.getAllFragments();
-    for (const fragment of registeredFragments.values()) {
-      console.log(`# FRAGMENT-${fragment.fragmentId}: `, fragment);
-
-      let matched = false;
-      // check the routePatterns
-      for (const pattern of fragment.routePatterns) {
-        const regex = new RegExp(pattern);
-        if (regex.test(url)) {
-          matched = true;
-          break;
-        }
-      }
-
-      if (matched) {
-        // fetch from upstream and stream the response to the client
-        const upstreamUrl = fragment.upstream;
-        console.log('### upstream', upstreamUrl);
-        const fetchOptions = { method: 'GET' };
-
-        fetch(upstreamUrl, fetchOptions)
-          .then((fetchResponse) => {
-            if (!fetchResponse.ok) {
-              throw new Error('Upstream fetch failed');
-            }
-
-            const readableStream = fetchResponse.body as ReadableStream<Uint8Array>;
-            console.log('### Fragment stream: ', readableStream);
-
-            if (readableStream) {
-              const stream = Readable.fromWeb(readableStream as any);
-              stream.pipe(res);
-            }
-          })
-          .catch(() => {
-            const errorResponse = fragment.onSsrFetchError();
-            errorResponse.response.text().then((html) => {
-              res.write(html);
-              res.end();
-            });
-          });
-
-        return;
-      }
-    }
-
-    // fallback to static Angular response
-    res.sendFile(path.resolve(browserDistFolder, 'index.html'));
-  });
-
-  return server;
-}
-
-function run(): void {
-  const port = process.env['PORT'] || 4000;
-
-  // Start up the Node server
-  const server = app();
-  server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
-  });
-}
-
-run();
- */
