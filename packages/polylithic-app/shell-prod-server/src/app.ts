@@ -18,7 +18,7 @@ const gateway = new FragmentGateway({
 gateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
-  routePatterns: ['/analog-page/:_?'],
+  routePatterns: ['/analog-page/:_*'],
   upstream: 'http://localhost:4200',
   onSsrFetchError: () => {
     return {
@@ -39,7 +39,6 @@ gateway.registerFragment({
   prePiercingClassNames: ['qwik'],
   routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*'],
   upstream: 'http://localhost:4173',
-  forwardFragmentHeaders: ['x-fragment-name'],
   onSsrFetchError: () => {
     return {
       response: new Response(
@@ -76,7 +75,7 @@ export function app(): express.Express {
   server.use(getMiddleware(gateway));
 
   // handle all requests
-  server.get('**', async (req, res, next) => {
+  server.get(/(.*)/, async (req, res, next) => {
     const url = req.originalUrl;
 
     // match the request to a fragment using `matchRequestToFragment`, instead of the previous
