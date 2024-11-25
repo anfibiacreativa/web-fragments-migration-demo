@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "typeRoots": ["./types", "./node_modules/@types"],
     "target": "ES2023",
     "module": "ES2022",
     "moduleResolution": "bundler",
@@ -9,5 +10,5 @@
     "esModuleInterop": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "src/app_backup.ts"]
+  "exclude": ["node_modules", "src/app_bckup.ts"]
 }
