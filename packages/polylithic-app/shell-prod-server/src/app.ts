@@ -37,7 +37,7 @@ gateway.registerFragment({
 gateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*'],
+  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*', 'ecommerce-page/:_*'],
   upstream: 'http://localhost:4173',
   onSsrFetchError: () => {
     return {
@@ -54,13 +54,13 @@ gateway.registerFragment({
 
 export function app(): express.Express {
   const __dirname = path.dirname(new URL(import.meta.url).pathname);
-  const browserDistFolder = path.resolve(__dirname, './dist/angular-shell-app/browser');
+  const browserDistFolder = path.resolve(__dirname, './angular-shell-app/browser');
   const staticAngularIndexHtmlPath = path.resolve(browserDistFolder, 'index.html');
 
   // Create the Express server
   const server = express();
 
-  server.set('view engine', 'html');
+server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
   // Serve Angular static assets
@@ -74,13 +74,18 @@ export function app(): express.Express {
   // get the gateway from the express-server-middleware
   server.use(getMiddleware(gateway));
 
+  server.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // Respond with No Content
+  });
+
   // handle all requests
   server.get(/(.*)/, async (req, res, next) => {
-    const url = req.originalUrl;
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+    const fullUrl = new URL(req.url, baseUrl); // Ensures URL is absolute
 
     // match the request to a fragment using `matchRequestToFragment`, instead of the previous
     // class imported locally
-    const matchedFragment = gateway.matchRequestToFragment(req.url);
+    const matchedFragment = gateway.matchRequestToFragment(fullUrl.toString());
 
     if (matchedFragment) {
       console.log(`Matched Fragment: ${matchedFragment.fragmentId}`);
@@ -117,7 +122,7 @@ export function app(): express.Express {
 
       }
     } else {
-      console.log(`No fragment matched. Serving Angular app for: ${url}`);
+      console.log(`No fragment matched. Serving Angular app for: ${fullUrl}`);
       res.sendFile(staticAngularIndexHtmlPath);
     }
   });
@@ -127,12 +132,12 @@ export function app(): express.Express {
 
 async function fetchFragment(req: express.Request, fragmentConfig: FragmentConfig) {
   const { upstream } = fragmentConfig;
-  const upstreamUrl = new URL(req.url, upstream);
+  const upstreamUrl = new URL(upstream);
   const headers = new Headers(req.headers as any);
   headers.set('sec-fetch-dest', 'empty');
   headers.set('x-fragment-mode', 'embedded');
 
-  const fragmentRequest = new Request(upstreamUrl.toString(), {
+  const fragmentRequest = new Request(upstreamUrl.origin.toString(), {
     method: req.method,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
     headers,

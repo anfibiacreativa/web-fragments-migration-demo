@@ -43,7 +43,26 @@ export function getMiddleware(
     response: ExpressResponse,
     next: NextFunction,
   ) => {
-    const matchedFragment = gateway.matchRequestToFragment(request.url);
+    // Construct the full URL
+    const protocol = request.protocol || 'http';
+    const host = request.get('host');
+
+    if (!host) {
+      console.error('[Middleware] Missing Host header.');
+      return response.status(400).send('Bad Request: Missing Host header.');
+    }
+
+    let fullUrl: string;
+    try {
+      fullUrl = new URL(request.url, `${protocol}://${host}`).toString();
+    } catch (error) {
+      console.error('[Middleware] Invalid URL:', error);
+      return response.status(400).send('Bad Request: Invalid URL.');
+    }
+
+    console.log(`[Middleware] Full URL: ${fullUrl}`);
+
+    const matchedFragment = gateway.matchRequestToFragment(fullUrl);
 
     if (!matchedFragment) {
       return next(); // No fragment matched; pass control to the next middleware
@@ -57,7 +76,7 @@ export function getMiddleware(
       }
 
       const fragmentResponse = await fetchFragment(
-        new Request(request.url, {
+        new Request(fullUrl, {
           method: request.method,
           body:
             request.method !== 'GET' && request.method !== 'HEAD'
