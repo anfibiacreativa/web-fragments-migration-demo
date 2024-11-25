@@ -1,5 +1,5 @@
-declare module "@gofunky/trumpet" {
-  import { Readable, Writable } from "stream";
+declare module '@gofunky/trumpet' {
+  import { Readable, Writable } from 'stream';
 
   export default function trumpet(): Trumpet;
 
