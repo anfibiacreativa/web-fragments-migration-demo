@@ -4,6 +4,7 @@ import path from 'path';
 import { getMiddleware } from './_middleware/fragment-express-middleware.js';
 import { FragmentGateway, FragmentConfig } from 'web-fragments/gateway';
 import { Readable, Writable } from 'stream';
+import trumpet from '@gofunky/trumpet';
 
 const gateway = new FragmentGateway({
   prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
@@ -60,7 +61,7 @@ export function app(): express.Express {
   // Create the Express server
   const server = express();
 
-server.set('view engine', 'html');
+  server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
   // Serve Angular static assets
@@ -71,7 +72,7 @@ server.set('view engine', 'html');
     })
   );
 
-  // get the gateway from the express-server-middleware
+  // use the fragment middleware
   server.use(getMiddleware(gateway));
 
   server.get('/favicon.ico', (req, res) => {
@@ -83,8 +84,8 @@ server.set('view engine', 'html');
     const baseUrl = `${req.protocol}://${req.get('host')}`;
     const fullUrl = new URL(req.url, baseUrl); // Ensures URL is absolute
 
-    // match the request to a fragment using `matchRequestToFragment`, instead of the previous
-    // class imported locally
+    console.log(`[Middleware] Full URL: ${fullUrl}`);
+
     const matchedFragment = gateway.matchRequestToFragment(fullUrl.toString());
 
     if (matchedFragment) {
@@ -92,7 +93,6 @@ server.set('view engine', 'html');
       try {
         const fragmentResponse = await fetchFragment(req, matchedFragment);
 
-        // stream the fragment response if it matches the current route
         if (req.headers['sec-fetch-dest'] === 'document') {
           const angularIndexHtml = fs
             .readFileSync(staticAngularIndexHtmlPath)
@@ -119,7 +119,6 @@ server.set('view engine', 'html');
 
         res.writeHead(errorResponse?.response.status || 500);
         res.end(errorResponse?.response.body || 'Internal Server Error');
-
       }
     } else {
       console.log(`No fragment matched. Serving Angular app for: ${fullUrl}`);
@@ -132,19 +131,86 @@ server.set('view engine', 'html');
 
 async function fetchFragment(req: express.Request, fragmentConfig: FragmentConfig) {
   const { upstream } = fragmentConfig;
+
+
+  console.log(`[fetchFragment] Using upstream URL: ${upstream}`);
+
   const upstreamUrl = new URL(upstream);
+
   const headers = new Headers(req.headers as any);
   headers.set('sec-fetch-dest', 'empty');
   headers.set('x-fragment-mode', 'embedded');
 
-  const fragmentRequest = new Request(upstreamUrl.origin.toString(), {
+  const fragmentRequest = new Request(upstreamUrl.toString(), {
     method: req.method,
     body: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
     headers,
   });
 
-  return fetch(fragmentRequest);
+  console.log(`[fetchFragment] Request details: Method=${req.method}, URL=${upstreamUrl.toString()}, Headers=${JSON.stringify(headers)}`);
+
+  try {
+    const response = await fetch(fragmentRequest);
+
+    console.log(`[fetchFragment] Response Status: ${response.status}`);
+    console.log(`[fetchFragment] Response Headers: ${JSON.stringify([...response.headers.entries()])}`);
+
+    return response;
+  } catch (error) {
+    console.error(`[fetchFragment] Error fetching fragment: ${error}`);
+    throw error;
+  }
 }
+
+function handleDocumentRequest(
+  response: express.Response,
+  fragmentResponse: Response,
+  fragmentConfig: FragmentConfig,
+) {
+  const { fragmentId, prePiercingClassNames } = fragmentConfig;
+
+  // convert the fragment response body to text
+  fragmentResponse.text().then(fragmentContent => {
+    // create a Trumpet instance to modify the HTML
+    const htmlModifier = trumpet();
+
+    // inject pre-piercing styles into the <head> tag
+    htmlModifier.select('head', (element: any) => {
+      element.createWriteStream().end(gateway.prePiercingStyles);
+    });
+
+    // embed the fragment HTML into the <body> tag
+    htmlModifier.select('body', (element: any) => {
+      const bodyStream = element.createWriteStream();
+      bodyStream.end(
+        fragmentHostInitialization({
+          fragmentId,
+          content: fragmentContent,
+          classNames: prePiercingClassNames.join(' '),
+        }),
+      );
+    });
+
+    // pipe the modified HTML stream to the response
+    response.setHeader('content-type', 'text/html');
+    response.writeHead(200);
+    htmlModifier.pipe(response);
+  });
+}
+
+const fragmentHostInitialization = ({
+  fragmentId,
+  content,
+  classNames,
+}: {
+  fragmentId: string;
+  content: string;
+  classNames: string;
+}) => `
+<fragment-host class="${classNames}" fragment-id="${fragmentId}" data-piercing="true">
+  <template shadowrootmode="open">${content}</template>
+</fragment-host>
+`;
 
 function run(): void {
   const port = process.env['PORT'] || 4000;

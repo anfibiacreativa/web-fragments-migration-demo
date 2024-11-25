@@ -4,8 +4,10 @@ import {
   Response as ExpressResponse,
 } from 'express';
 import { FragmentConfig, FragmentGateway } from 'web-fragments/gateway';
-
 import trumpet from '@gofunky/trumpet';
+import { Readable, Writable } from 'stream';
+import fs from 'fs';
+import path from 'path';
 
 const fragmentHostInitialization = ({
   fragmentId,
@@ -43,7 +45,6 @@ export function getMiddleware(
     response: ExpressResponse,
     next: NextFunction,
   ) => {
-    // Construct the full URL
     const protocol = request.protocol || 'http';
     const host = request.get('host');
 
@@ -65,99 +66,83 @@ export function getMiddleware(
     const matchedFragment = gateway.matchRequestToFragment(fullUrl);
 
     if (!matchedFragment) {
-      return next(); // No fragment matched; pass control to the next middleware
+      return next(); 
     }
 
+    console.log(`[Middleware] Matched Fragment: ${matchedFragment.fragmentId}`);
+    console.log(`[Middleware] Fragment Configuration:`, matchedFragment);
+
     try {
-      // Handle requests based on the `sec-fetch-dest` header
-      if (request.headers['sec-fetch-dest'] === 'iframe') {
-        response.setHeader('content-type', 'text/html');
-        return response.end('<!doctype html><title>'); // Respond with a minimal document
-      }
+      const fragmentResponse = await fetchFragment(matchedFragment);
 
-      const fragmentResponse = await fetchFragment(
-        new Request(fullUrl, {
-          method: request.method,
-          body:
-            request.method !== 'GET' && request.method !== 'HEAD'
-              ? JSON.stringify(request.body)
-              : undefined,
-        }),
-        matchedFragment,
-      );
-
-      if (request.headers['sec-fetch-dest'] === 'document') {
-        // Embed fragment in the original HTML page
-        return handleDocumentRequest(
-          response,
-          fragmentResponse,
-          matchedFragment,
+      if (!fragmentResponse.ok) {
+        console.error(
+          `[Middleware] Failed to fetch fragment. Upstream responded with status: ${fragmentResponse.status}`,
         );
+        return response
+          .status(500)
+          .send('Internal Server Error: Fragment fetch failed.');
       }
 
-      // Otherwise, let the request proceed
-      return next();
+      console.log('[Middleware] Fragment fetched successfully from upstream.');
+
+      return embedFragmentIntoHtml(response, fragmentResponse, matchedFragment);
     } catch (err) {
-      console.error('Error in middleware:', err);
+      console.error('[Middleware] Error:', err);
       response.status(500).send('Internal Server Error');
     }
   };
 
-  async function fetchFragment(
-    request: Request,
-    fragmentConfig: FragmentConfig,
-  ): Promise<Response> {
+  async function fetchFragment(fragmentConfig: FragmentConfig): Promise<Response> {
     const { upstream } = fragmentConfig;
-    const requestUrl = new URL(request.url);
-    const upstreamUrl = new URL(
-      `${requestUrl.pathname}${requestUrl.search}`,
-      upstream,
-    );
 
-    const fragmentReq = new Request(upstreamUrl.toString(), {
-      method: request.method,
-      headers: {
-        ...Object.fromEntries(new Headers(additionalHeaders).entries()),
-        'sec-fetch-dest': 'empty',
-        'x-fragment-mode': 'embedded',
-        ...(mode === 'development' ? { 'Accept-Encoding': 'gzip' } : {}),
-      },
-      body:
-        request.method !== 'GET' && request.method !== 'HEAD'
-          ? request.body
-          : undefined,
+    console.log(`[fetchFragment] Using upstream URL: ${upstream}`);
+
+    const headers = new Headers();
+    headers.set('sec-fetch-dest', 'empty');
+    headers.set('x-fragment-mode', 'embedded');
+
+    const fragmentRequest = new Request(upstream, {
+      method: 'GET',
+      headers,
     });
 
-    const response = await fetch(fragmentReq);
+    const response = await fetch(fragmentRequest);
 
-    if (!response.ok || !response.body) {
-      throw new Error(`Failed to fetch fragment from upstream: ${response.status}`);
-    }
-
+    console.log(`[fetchFragment] Fragment response status: ${response.status}`);
     return response;
   }
 
-  async function handleDocumentRequest(
+  function embedFragmentIntoHtml(
     response: ExpressResponse,
     fragmentResponse: Response,
     fragmentConfig: FragmentConfig,
   ) {
     const { fragmentId, prePiercingClassNames } = fragmentConfig;
+    const angularShellPath = path.resolve('./dist/angular-shell-app/browser/index.html');
+    console.log('### Angular Shell Path', angularShellPath);
+    if (!fs.existsSync(angularShellPath)) {
+      console.error('[embedFragmentIntoHtml] Angular shell file not found.');
+      return response
+        .status(500)
+        .send('Internal Server Error: Angular shell not found.');
+    }
 
-    // Convert the fragment response body to a string
-    const fragmentContent = await fragmentResponse.text();
-
-    // Create a stream to modify the response HTML
     const htmlModifier = trumpet();
 
-    // Inject pre-piercing styles into the `<head>`
     htmlModifier.select('head', (element: any) => {
-      element.createWriteStream().end(gateway.prePiercingStyles);
+      const headStream = element.createWriteStream();
+      headStream.end(gateway.prePiercingStyles);
     });
 
-    // Embed the fragment HTML into the `<body>`
-    htmlModifier.select('body', (element: any) => {
+    htmlModifier.select('body', async (element: any) => {
       const bodyStream = element.createWriteStream();
+
+      const fragmentContent = await fragmentResponse.text();
+      console.log(
+        `[embedFragmentIntoHtml] Embedding fragment content into body. Length: ${fragmentContent.length}`,
+      );
+
       bodyStream.end(
         fragmentHostInitialization({
           fragmentId,
@@ -167,10 +152,8 @@ export function getMiddleware(
       );
     });
 
-    // Pipe the modified HTML stream to the response
+    console.log('[embedFragmentIntoHtml] Serving modified Angular shell.');
     response.setHeader('content-type', 'text/html');
-    response.writeHead(200);
-
-    htmlModifier.pipe(response);
+    fs.createReadStream(angularShellPath).pipe(htmlModifier as unknown as Writable).pipe(response);
   }
 }
