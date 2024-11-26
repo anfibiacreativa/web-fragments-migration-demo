@@ -162,56 +162,6 @@ async function fetchFragment(req: express.Request, fragmentConfig: FragmentConfi
   }
 }
 
-function handleDocumentRequest(
-  response: express.Response,
-  fragmentResponse: Response,
-  fragmentConfig: FragmentConfig,
-) {
-  const { fragmentId, prePiercingClassNames } = fragmentConfig;
-
-  // convert the fragment response body to text
-  fragmentResponse.text().then(fragmentContent => {
-    // create a Trumpet instance to modify the HTML
-    const htmlModifier = trumpet();
-
-    // inject pre-piercing styles into the <head> tag
-    htmlModifier.select('head', (element: any) => {
-      element.createWriteStream().end(gateway.prePiercingStyles);
-    });
-
-    // embed the fragment HTML into the <body> tag
-    htmlModifier.select('body', (element: any) => {
-      const bodyStream = element.createWriteStream();
-      bodyStream.end(
-        fragmentHostInitialization({
-          fragmentId,
-          content: fragmentContent,
-          classNames: prePiercingClassNames.join(' '),
-        }),
-      );
-    });
-
-    // pipe the modified HTML stream to the response
-    response.setHeader('content-type', 'text/html');
-    response.writeHead(200);
-    htmlModifier.pipe(response);
-  });
-}
-
-const fragmentHostInitialization = ({
-  fragmentId,
-  content,
-  classNames,
-}: {
-  fragmentId: string;
-  content: string;
-  classNames: string;
-}) => `
-<fragment-host class="${classNames}" fragment-id="${fragmentId}" data-piercing="true">
-  <template shadowrootmode="open">${content}</template>
-</fragment-host>
-`;
-
 function run(): void {
   const port = process.env['PORT'] || 4000;
 
