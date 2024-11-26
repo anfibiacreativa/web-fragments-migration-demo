@@ -66,7 +66,7 @@ export function getMiddleware(
     const matchedFragment = gateway.matchRequestToFragment(fullUrl);
 
     if (!matchedFragment) {
-      return next(); 
+      return next();
     }
 
     console.log(`[Middleware] Matched Fragment: ${matchedFragment.fragmentId}`);
@@ -131,25 +131,72 @@ export function getMiddleware(
     const htmlModifier = trumpet();
 
     htmlModifier.select('head', (element: any) => {
-      const headStream = element.createWriteStream();
-      headStream.end(gateway.prePiercingStyles);
+      const headReadStream = element.createReadStream();
+      console.log('[Debug] Head Stream Selected:', !!headReadStream);
+
+      const headWriteStream = element.createWriteStream();
+      let headLegacyContent = '';
+
+      headReadStream.on('data', (chunk: any) => {
+        console.log('[Debug] Received chunk:', chunk.toString());
+        headLegacyContent += chunk.toString();
+      });
+
+      headReadStream.on('end', () => {
+        console.log('[Debug] Completed reading head content.');
+        const modifiedHeadContent = headLegacyContent + gateway.prePiercingStyles;
+
+        console.log(
+          `[embedFragmentIntoHtml] Modified Head Content: ${modifiedHeadContent}`
+        );
+
+        headWriteStream.end(modifiedHeadContent);
+      });
+
+      headReadStream.on('error', (err: Error) => {
+        console.error('[Debug] Error while reading head content:', err);
+        headWriteStream.end();
+      });
     });
 
     htmlModifier.select('body', async (element: any) => {
-      const bodyStream = element.createWriteStream();
+      const bodyReadStream = element.createReadStream();
+      const bodyWriteStream = element.createWriteStream();
 
-      const fragmentContent = await fragmentResponse.text();
-      console.log(
-        `[embedFragmentIntoHtml] Embedding fragment content into body. Length: ${fragmentContent.length}`,
-      );
+      let bodyLegacyContent = '';
 
-      bodyStream.end(
-        fragmentHostInitialization({
-          fragmentId,
-          content: fragmentContent,
-          classNames: prePiercingClassNames.join(' '),
-        }),
-      );
+      bodyReadStream.on('data', (chunk: any) => {
+        console.log('[Debug] Received body chunk:', chunk.toString());
+        bodyLegacyContent += chunk.toString();
+      });
+
+      bodyReadStream.on('end', async () => {
+        console.log('[Debug] Completed reading body content.');
+
+        const fragmentContent = await fragmentResponse.text();
+        console.log(
+          `[embedFragmentIntoHtml] Embedding fragment content into body. Fragment Length: ${fragmentContent.length}`
+        );
+
+        const modifiedBodyContent =
+          bodyLegacyContent +
+          fragmentHostInitialization({
+            fragmentId,
+            content: fragmentContent,
+            classNames: prePiercingClassNames.join(' '),
+          });
+
+        console.log(
+          `[embedFragmentIntoHtml] Final Modified Body Content Length: ${modifiedBodyContent.length}`
+        );
+
+        bodyWriteStream.end(modifiedBodyContent);
+      });
+
+      bodyReadStream.on('error', (err: Error) => {
+        console.error('[Debug] Error while reading body content:', err);
+        bodyWriteStream.end();
+      });
     });
 
     console.log('[embedFragmentIntoHtml] Serving modified Angular shell.');
