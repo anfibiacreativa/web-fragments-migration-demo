@@ -4,7 +4,7 @@ import type {
   Response as ExpressResponse,
 } from "express";
 import { FragmentConfig, FragmentGateway } from "web-fragments/gateway";
-import trumpet from "@gofunky/trumpet";
+// import trumpet from "@gofunky/trumpet";
 import { Readable as NodeReadableStream } from "node:stream";
 
 const fragmentHostInitialization = ({
@@ -42,13 +42,14 @@ export function getMiddleware(
     response: ExpressResponse,
     next: NextFunction,
   ) => {
-    console.log("Request URL:", request.url);
+    console.log("[Debug] Request URL: ", request.url);
+    const fragmentUrlToMatch = new URL("http://foo.bar" + request.url);
     const matchedFragment = gateway.matchRequestToFragment(
-      new URL("https://foo.bar" + request.url),
+      fragmentUrlToMatch.origin,
     );
 
     if (!matchedFragment) {
-      return next(); // Pass through if no fragment matches
+      return next();
     }
 
     const fetchDest = request.headers["sec-fetch-dest"];
@@ -121,13 +122,8 @@ export function getMiddleware(
 
   async function fetchFragment(request: Request, fragmentConfig: FragmentConfig) {
     const { upstream } = fragmentConfig;
-    const requestUrl = new URL(request.url);
-    const upstreamUrl = new URL(
-      `${requestUrl.pathname}${requestUrl.search}`,
-      upstream,
-    );
+    const upstreamUrl = new URL(upstream);
 
-    // Convert Express headers (Record<string, string | string[] | undefined>) to Headers object
     const headers = new Headers();
     Object.entries(request.headers).forEach(([key, value]) => {
       if (typeof value === "string") {
@@ -136,8 +132,8 @@ export function getMiddleware(
         headers.set(key, value.join(", "));
       }
     });
-
-    const fragmentReq = new Request(upstreamUrl.toString(), {
+    console.log('[Debug Upstream Url]:', upstreamUrl.origin)
+    const fragmentReq = new Request(upstreamUrl.origin, {
       method: request.method,
       headers,
       body:
@@ -161,7 +157,6 @@ export function getMiddleware(
 
     return fetch(fragmentReq);
   }
-
 
   function interceptResponseLogging(response: ExpressResponse) {
     const originalWrite = response.write.bind(response);
