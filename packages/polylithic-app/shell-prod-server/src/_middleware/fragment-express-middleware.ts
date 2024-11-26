@@ -1,13 +1,11 @@
-import {
+import type {
   NextFunction,
   Request as ExpressRequest,
   Response as ExpressResponse,
-} from 'express';
-import { FragmentConfig, FragmentGateway } from 'web-fragments/gateway';
-import trumpet from '@gofunky/trumpet';
-import { Readable, Writable } from 'stream';
-import fs from 'fs';
-import path from 'path';
+} from "express";
+import { FragmentConfig, FragmentGateway } from "web-fragments/gateway";
+import trumpet from "@gofunky/trumpet";
+import { Readable as NodeReadableStream } from "node:stream";
 
 const fragmentHostInitialization = ({
   fragmentId,
@@ -20,12 +18,11 @@ const fragmentHostInitialization = ({
 }) => `
 <fragment-host class="${classNames}" fragment-id="${fragmentId}" data-piercing="true">
   <template shadowrootmode="open">${content}</template>
-</fragment-host>
-`;
+</fragment-host>`;
 
 export type FragmentMiddlewareOptions = {
   additionalHeaders?: HeadersInit;
-  mode?: 'production' | 'development';
+  mode?: "production" | "development";
 };
 
 type ExpressMiddleware = (
@@ -38,169 +35,161 @@ export function getMiddleware(
   gateway: FragmentGateway,
   options: FragmentMiddlewareOptions = {},
 ): ExpressMiddleware {
-  const { additionalHeaders = {}, mode = 'development' } = options;
+  const { additionalHeaders = {}, mode = "development" } = options;
 
   return async (
     request: ExpressRequest,
     response: ExpressResponse,
     next: NextFunction,
   ) => {
-    const protocol = request.protocol || 'http';
-    const host = request.get('host');
-
-    if (!host) {
-      console.error('[Middleware] Missing Host header.');
-      return response.status(400).send('Bad Request: Missing Host header.');
-    }
-
-    let fullUrl: string;
-    try {
-      fullUrl = new URL(request.url, `${protocol}://${host}`).toString();
-    } catch (error) {
-      console.error('[Middleware] Invalid URL:', error);
-      return response.status(400).send('Bad Request: Invalid URL.');
-    }
-
-    console.log(`[Middleware] Full URL: ${fullUrl}`);
-
-    const matchedFragment = gateway.matchRequestToFragment(fullUrl);
+    console.log("Request URL:", request.url);
+    const matchedFragment = gateway.matchRequestToFragment(
+      new URL("https://foo.bar" + request.url),
+    );
 
     if (!matchedFragment) {
-      return next();
+      return next(); // Pass through if no fragment matches
     }
 
-    console.log(`[Middleware] Matched Fragment: ${matchedFragment.fragmentId}`);
-    console.log(`[Middleware] Fragment Configuration:`, matchedFragment);
+    const fetchDest = request.headers["sec-fetch-dest"];
 
-    try {
-      const fragmentResponse = await fetchFragment(matchedFragment);
-
-      if (!fragmentResponse.ok) {
-        console.error(
-          `[Middleware] Failed to fetch fragment. Upstream responded with status: ${fragmentResponse.status}`,
-        );
-        return response
-          .status(500)
-          .send('Internal Server Error: Fragment fetch failed.');
-      }
-
-      console.log('[Middleware] Fragment fetched successfully from upstream.');
-
-      return embedFragmentIntoHtml(response, fragmentResponse, matchedFragment);
-    } catch (err) {
-      console.error('[Middleware] Error:', err);
-      response.status(500).send('Internal Server Error');
+    if (fetchDest === "iframe") {
+      handleIframeRequest(response);
+      return;
+    } else if (fetchDest === "document") {
+      await handleDocumentRequest(request, response, matchedFragment, next);
+      return;
+    } else {
+      await handleFragmentFetch(request, response, matchedFragment);
+      return;
     }
   };
 
-  async function fetchFragment(fragmentConfig: FragmentConfig): Promise<Response> {
+  function handleIframeRequest(response: ExpressResponse) {
+    response.setHeader("content-type", "text/html");
+    response.end("<!doctype html><title>");
+  }
+
+  async function handleDocumentRequest(
+    request: ExpressRequest,
+    response: ExpressResponse,
+    matchedFragment: FragmentConfig,
+    next: NextFunction,
+  ) {
+    const interceptResponse = interceptResponseLogging(response);
+
+    // Allow underlying middleware or static files to serve the document
+    next();
+
+    // No additional logic here as the document request handling
+    // would include fragment injection or other custom handling upstream.
+  }
+
+  async function handleFragmentFetch(
+    request: ExpressRequest,
+    response: ExpressResponse,
+    matchedFragment: FragmentConfig,
+  ) {
+    try {
+      const fragmentResponse = await fetchFragment(
+        new Request(request.url, {
+          method: request.method,
+          headers: new Headers(request.headers as Record<string, string>),
+          body:
+            request.method !== "GET" && request.method !== "HEAD"
+              ? JSON.stringify(request.body)
+              : undefined,
+        }),
+        matchedFragment,
+      );
+
+      response.status(fragmentResponse.status);
+      fragmentResponse.headers.forEach((value, name) => {
+        response.setHeader(name, value);
+      });
+
+      if (fragmentResponse.body) {
+        NodeReadableStream.fromWeb(fragmentResponse.body as any).pipe(response);
+      } else {
+        response.end();
+      }
+    } catch (error) {
+      console.error("Error fetching fragment:", error);
+      response.status(500).send("Internal Server Error");
+    }
+  }
+
+  async function fetchFragment(request: Request, fragmentConfig: FragmentConfig) {
     const { upstream } = fragmentConfig;
+    const requestUrl = new URL(request.url);
+    const upstreamUrl = new URL(
+      `${requestUrl.pathname}${requestUrl.search}`,
+      upstream,
+    );
 
-    console.log(`[fetchFragment] Using upstream URL: ${upstream}`);
-
+    // Convert Express headers (Record<string, string | string[] | undefined>) to Headers object
     const headers = new Headers();
-    headers.set('sec-fetch-dest', 'empty');
-    headers.set('x-fragment-mode', 'embedded');
-
-    const fragmentRequest = new Request(upstream, {
-      method: 'GET',
-      headers,
+    Object.entries(request.headers).forEach(([key, value]) => {
+      if (typeof value === "string") {
+        headers.set(key, value);
+      } else if (Array.isArray(value)) {
+        headers.set(key, value.join(", "));
+      }
     });
 
-    const response = await fetch(fragmentRequest);
+    const fragmentReq = new Request(upstreamUrl.toString(), {
+      method: request.method,
+      headers,
+      body:
+        request.method !== "GET" && request.method !== "HEAD"
+          ? JSON.stringify(request.body)
+          : undefined,
+    });
 
-    console.log(`[fetchFragment] Fragment response status: ${response.status}`);
+    for (const [name, value] of Object.entries(additionalHeaders)) {
+      if (typeof value === "string") {
+        fragmentReq.headers.set(name, value);
+      }
+    }
+
+    fragmentReq.headers.set("sec-fetch-dest", "empty");
+    fragmentReq.headers.set("x-fragment-mode", "embedded");
+
+    if (mode === "development") {
+      fragmentReq.headers.set("Accept-Encoding", "gzip");
+    }
+
+    return fetch(fragmentReq);
+  }
+
+
+  function interceptResponseLogging(response: ExpressResponse) {
+    const originalWrite = response.write.bind(response);
+    const originalEnd = response.end.bind(response);
+    const originalSendFile = response.sendFile?.bind(response);
+
+    response.write = function (chunk: any, ...args: any[]) {
+      console.log("Intercept write:", chunk, ...args);
+      return originalWrite(chunk, ...args);
+    };
+
+    response.end = function (chunk?: any, ...args: any[]) {
+      console.log("Intercept end:", chunk, ...args);
+      return originalEnd(chunk, ...args);
+    };
+
+    if (originalSendFile) {
+      response.sendFile = function (
+        path: string,
+        options?: any,
+        callback?: (err: Error) => void
+      ) {
+        console.log("Intercept sendFile:", path, options);
+        return originalSendFile.call(response, path, options, callback);
+      };
+    }
+
     return response;
   }
 
-  function embedFragmentIntoHtml(
-    response: ExpressResponse,
-    fragmentResponse: Response,
-    fragmentConfig: FragmentConfig,
-  ) {
-    const { fragmentId, prePiercingClassNames } = fragmentConfig;
-    const angularShellPath = path.resolve('./dist/angular-shell-app/browser/index.html');
-    console.log('### Angular Shell Path', angularShellPath);
-    if (!fs.existsSync(angularShellPath)) {
-      console.error('[embedFragmentIntoHtml] Angular shell file not found.');
-      return response
-        .status(500)
-        .send('Internal Server Error: Angular shell not found.');
-    }
-
-    const htmlModifier = trumpet();
-
-    htmlModifier.select('head', (element: any) => {
-      const headReadStream = element.createReadStream();
-      console.log('[Debug] Head Stream Selected:', !!headReadStream);
-
-      const headWriteStream = element.createWriteStream();
-      let headLegacyContent = '';
-
-      headReadStream.on('data', (chunk: any) => {
-        console.log('[Debug] Received chunk:', chunk.toString());
-        headLegacyContent += chunk.toString();
-      });
-
-      headReadStream.on('end', () => {
-        console.log('[Debug] Completed reading head content.');
-        const modifiedHeadContent = headLegacyContent + gateway.prePiercingStyles;
-
-        console.log(
-          `[embedFragmentIntoHtml] Modified Head Content: ${modifiedHeadContent}`
-        );
-
-        headWriteStream.end(modifiedHeadContent);
-      });
-
-      headReadStream.on('error', (err: Error) => {
-        console.error('[Debug] Error while reading head content:', err);
-        headWriteStream.end();
-      });
-    });
-
-    htmlModifier.select('body', async (element: any) => {
-      const bodyReadStream = element.createReadStream();
-      const bodyWriteStream = element.createWriteStream();
-
-      let bodyLegacyContent = '';
-
-      bodyReadStream.on('data', (chunk: any) => {
-        console.log('[Debug] Received body chunk:', chunk.toString());
-        bodyLegacyContent += chunk.toString();
-      });
-
-      bodyReadStream.on('end', async () => {
-        console.log('[Debug] Completed reading body content.');
-
-        const fragmentContent = await fragmentResponse.text();
-        console.log(
-          `[embedFragmentIntoHtml] Embedding fragment content into body. Fragment Length: ${fragmentContent.length}`
-        );
-
-        const modifiedBodyContent =
-          bodyLegacyContent +
-          fragmentHostInitialization({
-            fragmentId,
-            content: fragmentContent,
-            classNames: prePiercingClassNames.join(' '),
-          });
-
-        console.log(
-          `[embedFragmentIntoHtml] Final Modified Body Content Length: ${modifiedBodyContent.length}`
-        );
-
-        bodyWriteStream.end(modifiedBodyContent);
-      });
-
-      bodyReadStream.on('error', (err: Error) => {
-        console.error('[Debug] Error while reading body content:', err);
-        bodyWriteStream.end();
-      });
-    });
-
-    console.log('[embedFragmentIntoHtml] Serving modified Angular shell.');
-    response.setHeader('content-type', 'text/html');
-    fs.createReadStream(angularShellPath).pipe(htmlModifier as unknown as Writable).pipe(response);
-  }
 }
