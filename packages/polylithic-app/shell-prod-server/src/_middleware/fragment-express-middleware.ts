@@ -46,6 +46,14 @@ export function getMiddleware(
     const reqUrl = new URL('http://foo.bar' + request.url);
     console.log('[Debug Info | Local request]:', reqUrl.href);
 
+    if (request.headers['sec-fetch-dest'] === 'script') {
+      console.log('[Debug Info | Dynamic script request]', request.url);
+      response.setHeader('content-type', 'text/javascript');
+      // Fallback logic if needed
+      console.log("Sec-Fetch-Dest indicates a script");
+    }
+
+
     const matchedFragment = gateway.matchRequestToFragment(reqUrl.href);
 
     if (matchedFragment) {
