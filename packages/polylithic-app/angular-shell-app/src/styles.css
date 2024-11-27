@@ -1,1 +1,244 @@
-/* You can add global styles to this file, and also import other style files */
+/* Reset styles */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
+/* General styles */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ensure body fills the entire viewport height */
+}
+
+h1 {
+  font-size: 5vw; /* Make h1 font size responsive */
+  background: linear-gradient(90deg, fuchsia, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 3vw; /* Make h2 font size responsive */
+  background: linear-gradient(90deg, fuchsia, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+h3 {
+  font-size: 2.5vw; /* Make h3 font size responsive */
+  background: linear-gradient(90deg, fuchsia, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Main content */
+.main {
+  max-width: 90vh;
+  margin: 60px auto;
+  flex: 1; /* Allow main content to expand and take available space */
+  margin-top: 70px; /* Prevent content from being hidden behind the fixed header */
+  padding: 0 20px 200px 20px; /* Make space for the footer */
+}
+
+/* Header */
+.header {
+  background-color: #000d1d;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Shop wrapper grid */
+.shop-wrapper {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+@media (min-width: 1024px) {
+  .shop-wrapper {
+    grid-template-columns: 3fr 1fr;
+  }
+}
+
+@media (min-width: 512px) and (max-width: 1023px) {
+  .shop-wrapper {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 511px) {
+  .shop-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Footer */
+.footer {
+  background-color: #001736; /* Dark grayish blue */
+  color: white;
+  text-align: center;
+  padding: 16px;
+  height: 200px;
+  width: 100%;
+  margin-top: auto; /* Always push footer to the bottom */
+}
+
+/* Links */
+a {
+  color: fuchsia;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(0, 89, 185);
+  text-decoration: underline;
+}
+
+/* Menu container */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 16px; /* Space between the bubbles */
+  justify-content: center;
+  margin-top: 50px; /* Add space for the header */
+  flex-wrap: wrap; /* Allow bubbles to wrap onto the next line in smaller viewports */
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* Menu items */
+li {
+  border: 2px solid fuchsia; /* Border color */
+  border-radius: 50px; /* Rounded corners for the bubble look */
+  padding: 10px 20px; /* Padding inside each bubble */
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.3s ease; /* Smooth transition effect */
+  cursor: pointer;
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+/* Links inside the bubbles */
+li a {
+  text-decoration: none;
+  color: fuchsia; /* Default link color matches the bubble border */
+  display: inline-block; /* Ensures the link spans the padding area */
+  transition: color 0.3s ease; /* Smooth color transition */
+}
+
+li:hover {
+  background-color: fuchsia; /* Fill the bubble on hover */
+  transform: scale(1.1); /* Slightly enlarge the bubble on hover */
+}
+
+li:hover a {
+  color: white; /* Change the link text color to white on hover */
+  text-decoration: none;
+}
+
+li:active {
+  transform: scale(1); /* Reset scale on click for a subtle effect */
+  background-color: turquoise; /* Optional: a different color for active state */
+}
+
+li:active a {
+  color: white; /* Ensure the text remains white in the active state */
+}
+
+/* Responsive styles for smaller viewports */
+@media (max-width: 768px) {
+  ul {
+    flex-direction: column; /* Stack menu items vertically */
+  }
+
+  li {
+    /* Ensure the bubbles take full width when stacked */
+    text-align: center;
+  }
+}
+
+@media (max-width: 512px) {
+  h1 {
+    font-size: 8vw; /* Adjust font size for very small screens */
+  }
+
+  h2 {
+    font-size: 6vw; /* Adjust h2 font size for smaller screens */
+  }
+
+  h3 {
+    font-size: 5vw; /* Adjust h3 font size for smaller screens */
+  }
+}
+
+/* Header icon links */
+.header a.icon-link {
+  margin-right: 16px; /* Space between the icons */
+  color: white; /* Default color for the icons */
+  font-size: 24px; /* Icon size */
+  transition: color 0.3s ease; /* Smooth transition for color change */
+  text-decoration: none; /* Remove underline from links */
+}
+
+/* Hover effect */
+.header a.icon-link:hover {
+  color: fuchsia; /* Change to fuchsia on hover */
+}
+
+/* Optional: Add a little space between icons in the header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
