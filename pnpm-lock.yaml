@@ -450,6 +450,7 @@ importers:
         version: 4.3.2(typescript@5.4.5)(vite@5.3.5(@types/node@20.14.11)(less@4.2.0)(sass@1.77.6)(stylus@0.64.0)(terser@5.31.6))
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   packages/polylithic-app/qwik-shopping-cart/server: {}
 
 <<<<<<< HEAD
@@ -575,6 +576,10 @@ importers:
 =======
 =======
 >>>>>>> 73c441b (chore: add missing types)
+=======
+  packages/polylithic-app/qwik-shopping-cart/server: {}
+
+>>>>>>> 9d2e522 (fix: fix single fragment embed. (pending multi-embedding))
   packages/polylithic-app/shell-prod-server:
     dependencies:
       '@gofunky/trumpet':
@@ -23174,6 +23179,7 @@ snapshots:
       ms: 2.1.2
 
 <<<<<<< HEAD
+<<<<<<< HEAD
   debug@4.3.7:
 =======
 =======
@@ -23194,6 +23200,12 @@ snapshots:
 >>>>>>> 1f01ee4 (chore: make clientside)
 =======
 >>>>>>> 73c441b (chore: add missing types)
+=======
+  debug@4.3.7:
+    dependencies:
+      ms: 2.1.3
+
+>>>>>>> 9d2e522 (fix: fix single fragment embed. (pending multi-embedding))
   debug@4.3.7(supports-color@9.4.0):
 >>>>>>> 87a1cef (chore: add analog app (#9))
     dependencies:
@@ -30209,8 +30221,12 @@ snapshots:
 =======
   send@1.1.0:
     dependencies:
+<<<<<<< HEAD
       debug: 4.3.7(supports-color@9.4.0)
 >>>>>>> 73c441b (chore: add missing types)
+=======
+      debug: 4.3.7
+>>>>>>> 9d2e522 (fix: fix single fragment embed. (pending multi-embedding))
       destroy: 1.2.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
