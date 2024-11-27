@@ -65,7 +65,7 @@ export function getMiddleware(
         console.log('[Debug Info | Document request]');
         try {
           next();
-          //await processFragmentForEmbedding(fragmentResponse, response, matchedFragment);
+          // await processFragmentForEmbedding(fragmentResponse, response, matchedFragment);
         } catch (err) {
           console.error('[Error] Error during fragment embedding:', err);
           return renderErrorResponse(err, response);
