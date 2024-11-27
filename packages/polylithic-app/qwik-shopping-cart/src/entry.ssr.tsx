@@ -9,7 +9,7 @@ export default function (opts: RenderToStreamOptions) {
 	return renderToStream(<Root />, {
 		manifest,
 		...opts,
-    base: "/_fragment/qwik/assets/build",
+    base: "build",
 		// needed for reframing/fragmenting
 		containerTagName: "qwik-fragment",
     serverData: {
