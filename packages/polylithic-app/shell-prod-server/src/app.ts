@@ -4,6 +4,7 @@ import path from 'path';
 import { getMiddleware } from './_middleware/fragment-express-middleware.js';
 import { FragmentGateway } from 'web-fragments/gateway';
 
+// start the gateway
 const gateway = new FragmentGateway({
   prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
       fragment-host[data-piercing="true"] {
@@ -18,7 +19,7 @@ const gateway = new FragmentGateway({
     </style>`,
 });
 
-// Register fragments
+// register fragment: analog
 gateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
@@ -35,6 +36,7 @@ gateway.registerFragment({
   }),
 });
 
+// register fragment: qwik
 gateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
@@ -61,7 +63,7 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // Serve static files
+  // serve static files
   server.use(
     express.static(browserDistFolder, {
       maxAge: '1y',
@@ -69,10 +71,10 @@ export function app(): express.Express {
     })
   );
 
-  // Add the fragment middleware
+  // add the fragment middleware
   server.use(getMiddleware(gateway));
 
-  // Serve Angular app for unmatched routes
+  // serve Angular app for unmatched routes
   server.get(/(.*)/, (req, res) => {
     res.sendFile(staticAngularIndexHtmlPath);
   });
