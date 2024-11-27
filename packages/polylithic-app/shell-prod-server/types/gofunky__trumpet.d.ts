@@ -6,6 +6,7 @@ declare module '@gofunky/trumpet' {
   export interface Trumpet {
     pipe(destination: Writable, options?: { end?: boolean }): Writable;
     select(selector: string, callback: (element: TrumpetElement) => void): void;
+    selectAll(selector: string, callback: (element: TrumpetElement) => void): void;
     createWriteStream(selector: string): Writable;
   }
 
