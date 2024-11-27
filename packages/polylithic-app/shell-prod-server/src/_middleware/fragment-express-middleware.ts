@@ -2,10 +2,10 @@ import type {
   NextFunction,
   Request as ExpressRequest,
   Response as ExpressResponse,
-} from "express";
-import { FragmentConfig, FragmentGateway } from "web-fragments/gateway";
-// import trumpet from "@gofunky/trumpet";
-import { Readable as NodeReadableStream } from "node:stream";
+} from 'express';
+import { FragmentConfig, FragmentGateway } from 'web-fragments/gateway';
+import trumpet from '@gofunky/trumpet';
+import { Readable as NodeReadableStream } from 'node:stream';
 
 const fragmentHostInitialization = ({
   fragmentId,
@@ -18,11 +18,12 @@ const fragmentHostInitialization = ({
 }) => `
 <fragment-host class="${classNames}" fragment-id="${fragmentId}" data-piercing="true">
   <template shadowrootmode="open">${content}</template>
-</fragment-host>`;
+</fragment-host>
+`;
 
 export type FragmentMiddlewareOptions = {
   additionalHeaders?: HeadersInit;
-  mode?: "production" | "development";
+  mode?: 'production' | 'development';
 };
 
 type ExpressMiddleware = (
@@ -35,156 +36,145 @@ export function getMiddleware(
   gateway: FragmentGateway,
   options: FragmentMiddlewareOptions = {},
 ): ExpressMiddleware {
-  const { additionalHeaders = {}, mode = "development" } = options;
+  const { additionalHeaders = {}, mode = 'development' } = options;
 
   return async (
     request: ExpressRequest,
     response: ExpressResponse,
     next: NextFunction,
   ) => {
-    console.log("[Debug] Request URL: ", request.url);
-    const fragmentUrlToMatch = new URL("http://foo.bar" + request.url);
-    const matchedFragment = gateway.matchRequestToFragment(
-      fragmentUrlToMatch.origin,
-    );
+    const reqUrl = new URL('http://foo.bar' + request.url);
+    console.log('[Debug Info | Local request]:', reqUrl.href);
 
-    if (!matchedFragment) {
-      return next();
-    }
+    const matchedFragment = gateway.matchRequestToFragment(reqUrl.href);
 
-    const fetchDest = request.headers["sec-fetch-dest"];
+    if (matchedFragment) {
+      console.log('[Debug Info | Matched Fragment]:' + JSON.stringify(matchedFragment));
 
-    if (fetchDest === "iframe") {
-      handleIframeRequest(response);
-      return;
-    } else if (fetchDest === "document") {
-      await handleDocumentRequest(request, response, matchedFragment, next);
-      return;
+      if (request.headers['sec-fetch-dest'] === 'iframe') {
+        console.log(`[Debug Info]: Request Iframe for: ` + JSON.stringify(matchedFragment));
+        response.setHeader('content-type', 'text/html');
+        return response.end('<!doctype html><title>');
+      }
+
+      // fetch the fragment only after ensuring route is processed
+      const fragmentResponse = await fetchFragment(request, matchedFragment);
+
+      // process fragment embedding only if it's a document request
+      if (request.headers['sec-fetch-dest'] === 'document') {
+        console.log('[Debug Info | Document request]');
+        try {
+          next();
+          //await processFragmentForEmbedding(fragmentResponse, response, matchedFragment);
+        } catch (err) {
+          console.error('[Error] Error during fragment embedding:', err);
+          return renderErrorResponse(err, response);
+        }
+      } else {
+        // for non-document requests, just pipe the fragment directly
+        if (fragmentResponse.body) {
+          const nodeReadableStream = NodeReadableStream.fromWeb(fragmentResponse.body as any);
+          nodeReadableStream.pipe(response);
+        } else {
+          console.error('[Error] No body in fragment response');
+          response.status(500).send('<p>Fragment response body is empty.</p>');
+        }
+      }
     } else {
-      await handleFragmentFetch(request, response, matchedFragment);
-      return;
+      // if no fragment is matched, default to server handling
+      return next();
     }
   };
 
-  function handleIframeRequest(response: ExpressResponse) {
-    response.setHeader("content-type", "text/html");
-    response.end("<!doctype html><title>");
-  }
-
-  async function handleDocumentRequest(
+  // fetch the fragment
+  async function fetchFragment(
     request: ExpressRequest,
-    response: ExpressResponse,
-    matchedFragment: FragmentConfig,
-    next: NextFunction,
-  ) {
-    const interceptResponse = interceptResponseLogging(response);
-
-    // Allow underlying middleware or static files to serve the document
-    next();
-
-    // No additional logic here as the document request handling
-    // would include fragment injection or other custom handling upstream.
-  }
-
-  async function handleFragmentFetch(
-    request: ExpressRequest,
-    response: ExpressResponse,
-    matchedFragment: FragmentConfig,
-  ) {
-    try {
-      const fragmentResponse = await fetchFragment(
-        new Request(request.url, {
-          method: request.method,
-          headers: new Headers(request.headers as Record<string, string>),
-          body:
-            request.method !== "GET" && request.method !== "HEAD"
-              ? JSON.stringify(request.body)
-              : undefined,
-        }),
-        matchedFragment,
-      );
-
-      response.status(fragmentResponse.status);
-      fragmentResponse.headers.forEach((value, name) => {
-        response.setHeader(name, value);
-      });
-
-      if (fragmentResponse.body) {
-        NodeReadableStream.fromWeb(fragmentResponse.body as any).pipe(response);
-      } else {
-        response.end();
-      }
-    } catch (error) {
-      console.error("Error fetching fragment:", error);
-      response.status(500).send("Internal Server Error");
-    }
-  }
-
-  async function fetchFragment(request: Request, fragmentConfig: FragmentConfig) {
+    fragmentConfig: FragmentConfig,
+  ): Promise<Response> {
     const { upstream } = fragmentConfig;
-    const upstreamUrl = new URL(upstream);
+    const host = request.host;
+    const pathname = request.path;
+
+    const fetchUrl = new URL(`${host}${pathname}`);
+    console.log('[Debug Info | Fetch URL]: ' + fetchUrl);
 
     const headers = new Headers();
-    Object.entries(request.headers).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        headers.set(key, value);
-      } else if (Array.isArray(value)) {
-        headers.set(key, value.join(", "));
+
+    // copy headers from the original request
+    if (request.headers) {
+      for (const [key, value] of Object.entries(request.headers)) {
+        if (Array.isArray(value)) {
+          value.forEach(val => headers.append(key, val));
+        } else if (value) {
+          headers.append(key, value);
+        }
       }
-    });
-    console.log('[Debug Upstream Url]:', upstreamUrl.origin)
-    const fragmentReq = new Request(upstreamUrl.origin, {
+    }
+
+    headers.append('sec-fetch-dest', 'empty');
+    headers.append('x-fragment-mode', 'embedded');
+
+    // handle local development mode
+    // TODO: validate we still need this?
+    if (mode === 'development') {
+      headers.append('Accept-Encoding', 'gzip');
+    }
+
+    // prepare the fragment request
+    const fragmentReq = new Request(upstream, {
       method: request.method,
       headers,
-      body:
-        request.method !== "GET" && request.method !== "HEAD"
-          ? JSON.stringify(request.body)
-          : undefined,
+      body: request.method !== 'GET' && request.method !== 'HEAD' ? JSON.stringify(request.body) : undefined,
     });
 
-    for (const [name, value] of Object.entries(additionalHeaders)) {
-      if (typeof value === "string") {
-        fragmentReq.headers.set(name, value);
-      }
-    }
+    // forward additional headers
+    Object.entries(additionalHeaders).forEach(([name, value]) => {
+      fragmentReq.headers.set(name, value as string);
+    });
 
-    fragmentReq.headers.set("sec-fetch-dest", "empty");
-    fragmentReq.headers.set("x-fragment-mode", "embedded");
-
-    if (mode === "development") {
-      fragmentReq.headers.set("Accept-Encoding", "gzip");
-    }
-
-    return fetch(fragmentReq);
+    const fragmentResponse = await fetch(fragmentReq);
+    return fragmentResponse;
   }
 
-  function interceptResponseLogging(response: ExpressResponse) {
-    const originalWrite = response.write.bind(response);
-    const originalEnd = response.end.bind(response);
-    const originalSendFile = response.sendFile?.bind(response);
+  // process the fragment response for embedding into the host document
+  async function processFragmentForEmbedding(
+    fragmentResponse: Response,
+    res: ExpressResponse,
+    fragmentConfig: FragmentConfig,
+  ) {
+    const tr = trumpet();
+    const { fragmentId, prePiercingClassNames } = fragmentConfig;
 
-    response.write = function (chunk: any, ...args: any[]) {
-      console.log("Intercept write:", chunk, ...args);
-      return originalWrite(chunk, ...args);
-    };
+    // inject the fragment's content into the host document head
+    // TODO: fix this. the piercing Styles are not embedded
+    tr.select('head', (element) => {
+      element.createWriteStream().end(gateway.prePiercingStyles);
+    });
 
-    response.end = function (chunk?: any, ...args: any[]) {
-      console.log("Intercept end:", chunk, ...args);
-      return originalEnd(chunk, ...args);
-    };
+    const fragmentContent = await fragmentResponse.text();
 
-    if (originalSendFile) {
-      response.sendFile = function (
-        path: string,
-        options?: any,
-        callback?: (err: Error) => void
-      ) {
-        console.log("Intercept sendFile:", path, options);
-        return originalSendFile.call(response, path, options, callback);
-      };
-    }
+    tr.select('body', (element) => {
+      const bodyWriteStream = element.createWriteStream();
+      bodyWriteStream.end(
+        fragmentHostInitialization({
+          fragmentId,
+          content: fragmentContent,
+          classNames: prePiercingClassNames.join(' '),
+        }),
+      );
 
-    return response;
+      // pipe the fragment's body content through trumpet
+      const fragmentStream = NodeReadableStream.fromWeb(fragmentResponse.body as any);
+      tr.pipe(fragmentStream as any);
+    });
   }
 
+  // render an error response if something goes wrong
+  function renderErrorResponse(err: unknown, response: ExpressResponse) {
+    if (err instanceof Error) {
+      response.status(500).send(`<p>Error: ${err.message}</p>`);
+    } else {
+      response.status(500).send('<p>Unknown error occurred.</p>');
+    }
+  }
 }
