@@ -23,7 +23,7 @@ const gateway = new FragmentGateway({
 gateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
-  routePatterns: ['/analog-page/:_*', 'ecommerce-page/:_*'],
+  routePatterns: ['/analog-page/:_*', '/ecommerce-page/:_*'],
   upstream: 'http://localhost:4200',
   onSsrFetchError: () => ({
     response: new Response(
@@ -40,7 +40,7 @@ gateway.registerFragment({
 gateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*', 'ecommerce-page/:_*'],
+  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*', '/ecommerce-page/:_*'],
   upstream: 'http://localhost:4173',
   onSsrFetchError: () => ({
     response: new Response(
