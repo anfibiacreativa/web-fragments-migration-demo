@@ -1,15 +1,12 @@
 <!-- <app-fragment [fragmentId]="'qwik'"></app-fragment> -->
 <!-- <app-fragment [fragmentId]="'analog'"></app-fragment> -->
 
-<main class="main fragment-wrapper">
-  <div class="test-div-class">Test div</div>
-  <div class="shop-wrapper">
-    <fragment-outlet fragment-id="analog"></fragment-outlet>
-    <fragment-outlet fragment-id="qwik"></fragment-outlet>
-  </div>
-  <div class="text">
-    <p>
-      Lorem ipsum dolor sit amet...
-    </p>
-  </div>
-</main>
+<div class="shop-wrapper">
+  <fragment-outlet fragment-id="analog"></fragment-outlet>
+  <fragment-outlet fragment-id="qwik"></fragment-outlet>
+</div>
+<div class="text">
+  <p>
+    Lorem ipsum dolor sit amet...
+  </p>
+</div>
