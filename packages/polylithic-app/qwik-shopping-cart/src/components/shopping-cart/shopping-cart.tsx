@@ -1,4 +1,5 @@
-import { component$, useStore, $ } from '@builder.io/qwik';
+import { component$, useStore, useVisibleTask$, $ } from '@builder.io/qwik';
+import { initialProducts } from '../../data/data'; // Assuming initial products are defined here
 import './shopping-cart.css';
 
 export interface CartItem {
@@ -18,45 +19,70 @@ export interface Product {
 }
 
 export const ShoppingCart = component$(() => {
-  const cart = useStore<{ items: CartItem[] }>({
-    // TODO: consume from state coming from catalog in another fragment
-    items: [
-      {
-        product: {
-          id: 1,
-          name: 'Angular Developer Tee',
-          description: 'Perfect for Angular developers who love type-safety!',
-          price: 29.99,
-          color: 'Red',
-          size: 'M',
-          imageUrl: 'https://placehold.co/300x400',
-          rating: 4.5,
-        },
-        quantity: 1,
-      },
-      {
-        product: {
-          id: 2,
-          name: 'TypeScript Enthusiast Shirt',
-          description: 'Show your love for interfaces and decorators!',
-          price: 24.99,
-          color: 'Blue',
-          size: 'L',
-          imageUrl: 'https://placehold.co/300x400',
-          rating: 4.8,
-        },
-        quantity: 2,
-      },
-    ],
+  const cart = useStore<{ items: CartItem[] }>({ items: [] });
+
+  // Save cart to localStorage
+  const saveCartToLocalStorage = $(() => {
+    localStorage.setItem('shoppingCart', JSON.stringify(cart.items));
   });
 
-  const isError = useStore({ value: false });
-  const messageError = useStore({ value: '' });
+  // Load cart from localStorage or fallback to initial products
+  useVisibleTask$(() => {
+    const savedCart = localStorage.getItem('shoppingCart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        cart.items = parsedCart;
+      } catch (error) {
+        console.error('Failed to parse cart from localStorage:', error);
+        cart.items = [...initialProducts];  // Fallback to initial products
+        saveCartToLocalStorage();  // Save fallback products to localStorage
+      }
+    } else {
+      cart.items = [...initialProducts];  // Fallback to initial products if nothing in localStorage
+      saveCartToLocalStorage();  // Save initial products to localStorage
+    }
+  });
 
+  // Handle add to cart via postMessage
+  useVisibleTask$(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.origin) return;
+
+      if (event.data && event.data.type === 'add_to_cart') {
+        const decodedData = atob(event.data.product);
+
+        try {
+          const product: Product = JSON.parse(decodedData);
+
+          const existingItemIndex = cart.items.findIndex((item) => item.product.id === product.id);
+          if (existingItemIndex !== -1) {
+            cart.items[existingItemIndex].quantity += 1;
+          } else {
+            cart.items.push({ product, quantity: 1 });
+          }
+
+          saveCartToLocalStorage();
+        } catch (error) {
+          console.error('Failed to decode or parse product:', error);
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  });
+
+  // Remove all instances of a product
   const removeItems = $((id: number) => {
     cart.items = cart.items.filter((item) => item.product.id !== id);
+    saveCartToLocalStorage();
   });
 
+  // Remove one instance of a product
   const removeItem = $((id: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
@@ -67,17 +93,20 @@ export const ShoppingCart = component$(() => {
         cart.items = cart.items.filter((item) => item.product.id !== id);
       }
     }
+    saveCartToLocalStorage();
   });
 
+  // Add one more instance of a product
   const addItem = $((id: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
       const item = cart.items[itemIndex];
       cart.items[itemIndex] = { ...item, quantity: item.quantity + 1 };
     }
+    saveCartToLocalStorage();
   });
 
-  // Updates the quantity of the product to a specific value
+  // Update product quantity
   const updateQuantity = $((id: number, quantity: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
@@ -87,6 +116,7 @@ export const ShoppingCart = component$(() => {
         cart.items = cart.items.filter((item) => item.product.id !== id);
       }
     }
+    saveCartToLocalStorage();
   });
 
   const total = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
@@ -96,7 +126,6 @@ export const ShoppingCart = component$(() => {
       <div class="cart">
         <h2>Shopping Cart</h2>
 
-        {/* check if cart is empty */}
         {cart.items.length === 0 ? (
           <p>Your cart is empty</p>
         ) : (
@@ -104,7 +133,7 @@ export const ShoppingCart = component$(() => {
             <ul class="cart-items">
               {cart.items.map((item) => (
                 <li key={item.product.id} class="cart-item">
-                  <img src={item.product.imageUrl} alt={item.product.name} width="80" height="80"/>
+                  <img src={item.product.imageUrl} alt={item.product.name} width="80" height="80" />
                   <div class="item-details">
                     <h3>{item.product.name}</h3>
                     <p>${item.product.price.toFixed(2)}</p>
@@ -117,7 +146,9 @@ export const ShoppingCart = component$(() => {
                         type="number"
                         value={item.quantity}
                         min="1"
-                        onInput$={(e) => updateQuantity(item.product.id, parseInt((e.target as HTMLInputElement).value, 10))}
+                        onInput$={(e) =>
+                          updateQuantity(item.product.id, parseInt((e.target as HTMLInputElement).value, 10))
+                        }
                       />
                       <button class="btn" onClick$={() => addItem(item.product.id)}>+</button>
                     </div>
@@ -132,13 +163,6 @@ export const ShoppingCart = component$(() => {
               <p class="total">Total: ${total.toFixed(2)}</p>
             </div>
           </>
-        )}
-
-        {/* error conditional */}
-        {isError.value && (
-          <div class="errorMessage">
-            <span>{messageError.value}</span>
-          </div>
         )}
       </div>
     </>
