@@ -7,11 +7,19 @@ import analog from '@analogjs/platform';
 export default defineConfig(({ mode }) => ({
   build: {
     target: ['es2020'],
+    assetsDir: '_fragment/analog/assets',
   },
   resolve: {
     mainFields: ['module'],
   },
-  plugins: [analog({ vite: { experimental: { supportAnalogFormat: true } } })],
+  plugins: [analog({ nitro: {
+    publicAssets: [
+      {
+        baseURL: "_fragment/analog/assets",
+      },
+    ],
+  },
+  vite: { experimental: { supportAnalogFormat: true } } })],
   test: {
     globals: true,
     environment: 'jsdom',
