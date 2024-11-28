@@ -11,7 +11,8 @@
     "start": "pnpm run dev",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "preview": "pnpm run build && NITRO_PORT=4174 node dist/analog/server/index.mjs"
   },
   "private": true,
   "dependencies": {

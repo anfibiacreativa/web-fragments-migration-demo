@@ -7,14 +7,14 @@
 
 ```bash
 $ cd packages/polylithic-app/qwik-shopping-cart
-$ pnpm build && pnpm start
+$ pnpm preview
 ```
 
 5 - Start the Analog.js app
 
 ```bash
 $ cd packages/polylithic-app/analog-product-catalog
-$ pnpm build && pnpm start
+$ pnpm preview
 ```
 
 6 - Build the prod version of the shell app
