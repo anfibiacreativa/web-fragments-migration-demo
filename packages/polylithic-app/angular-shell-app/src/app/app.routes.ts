@@ -7,6 +7,6 @@ import { EcommercePageComponent } from './components/ecommerce-component/ecommer
 export const routes: Routes = [
   { path: '', component: HomepageComponent },
   { path: 'qwik-page', component: QwikPageComponent },
-  { path: 'analog-page', component: AnalogPageComponent },
+  { path: 'catalog-page', component: AnalogPageComponent },
   { path: 'ecommerce-page', component: EcommercePageComponent }
 ];
