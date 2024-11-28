@@ -1,0 +1,12 @@
+<button
+  class="checkout-button"
+  [class.zoom]="zoomAnimation()"
+  (click)="handleCheckout()"
+>
+  <div class="checkout-content">
+    <div class="cart-icon">
+      <span class="cart-icon-number">{{ itemCount() }}</span>
+    </div>
+    <span>Checkout</span>
+  </div>
+</button>
