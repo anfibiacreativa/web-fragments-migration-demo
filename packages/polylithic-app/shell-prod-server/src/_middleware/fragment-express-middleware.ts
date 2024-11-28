@@ -100,11 +100,12 @@ export function getMiddleware(
     fragmentConfig: FragmentConfig,
   ): Promise<Response> {
     const { upstream } = fragmentConfig;
+    const protocol = request.protocol;
     const host = request.host;
     const pathname = request.path;
 
-    const fetchUrl = new URL(`${host}${pathname}`);
-    console.log('[Debug Info | Fetch URL]: ' + fetchUrl);
+    const fetchUrl = new URL(`${protocol}://${host}${pathname}`);
+    console.log('[Debug Info | Browser Fetch URL]: ' + fetchUrl);
 
     const headers = new Headers();
 
@@ -129,7 +130,8 @@ export function getMiddleware(
     }
 
     // prepare the fragment request
-    const fragmentReq = new Request(upstream, {
+    const fragmentReqUrl = new URL(request.url, upstream);
+    const fragmentReq = new Request(fragmentReqUrl, {
       method: request.method,
       headers,
       body: request.method !== 'GET' && request.method !== 'HEAD' ? JSON.stringify(request.body) : undefined,
@@ -141,6 +143,8 @@ export function getMiddleware(
     });
 
     const fragmentResponse = await fetch(fragmentReq);
+
+    console.log(`[Debug Info | Gateway Fetch Response]: status=${fragmentResponse.status}, content-type=${fragmentResponse.headers.get('content-type')}, url=${fragmentReq.url}`);
     return fragmentResponse;
   }
 
