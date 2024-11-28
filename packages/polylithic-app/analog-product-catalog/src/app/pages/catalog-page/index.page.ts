@@ -9,7 +9,7 @@ import { ProductService } from '../../shared/services/product.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterOutlet, ProductCardComponent],
   templateUrl: '../index.page.html',
-  styleUrls: ['../index.page.css']
+  styleUrls: ['./catalog.page.css']
 })
 export default class HomePageComponent {
   constructor(private productService: ProductService) {}
