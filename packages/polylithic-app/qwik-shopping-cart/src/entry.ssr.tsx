@@ -9,10 +9,12 @@ export default function (opts: RenderToStreamOptions) {
 	return renderToStream(<Root />, {
 		manifest,
 		...opts,
-    base: "build",
+	// TODO: why not /_fragment/qwik/assets/build ???
+	// if we set it to that, we get duplicate path prefix in asset urls
+	base: "build",
 		// needed for reframing/fragmenting
 		containerTagName: "qwik-fragment",
-    serverData: {
+	serverData: {
 			...opts.serverData,
 			url: "http://localhost:4208/qwik-page",
 		},
