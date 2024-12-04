@@ -4,8 +4,8 @@ import type {
   Response as ExpressResponse,
 } from 'express';
 import { FragmentConfig, FragmentGateway } from 'web-fragments/gateway';
-import trumpet from '@gofunky/trumpet';
-import { Readable as NodeReadableStream } from 'node:stream';
+import trumpet, { TrumpetElement } from '@gofunky/trumpet';
+import { Readable as NodeReadable } from 'node:stream';
 
 const fragmentHostInitialization = ({
   fragmentId,
@@ -39,16 +39,16 @@ export function getMiddleware(
   const { additionalHeaders = {}, mode = 'development' } = options;
 
   return async (
-    request: ExpressRequest,
-    response: ExpressResponse,
+    expressRequest: ExpressRequest,
+    expressResponse: ExpressResponse,
     next: NextFunction,
   ) => {
-    const reqUrl = new URL('http://foo.bar' + request.url);
+    const reqUrl = new URL('http://foo.bar' + expressRequest.url);
     console.log('[Debug Info | Local request]:', reqUrl.href);
 
-    if (request.headers['sec-fetch-dest'] === 'script') {
-      console.log('[Debug Info | Dynamic script request]', request.url);
-      response.setHeader('content-type', 'text/javascript');
+    if (expressRequest.headers['sec-fetch-dest'] === 'script') {
+      console.log('[Debug Info | Dynamic script request]', expressRequest.url);
+      expressResponse.setHeader('content-type', 'text/javascript');
       // Fallback logic if needed
       console.log("Sec-Fetch-Dest indicates a script");
     }
@@ -59,33 +59,37 @@ export function getMiddleware(
     if (matchedFragment) {
       console.log('[Debug Info | Matched Fragment]:' + JSON.stringify(matchedFragment));
 
-      if (request.headers['sec-fetch-dest'] === 'iframe') {
+      if (expressRequest.headers['sec-fetch-dest'] === 'iframe') {
         console.log(`[Debug Info]: Request Iframe for: ` + JSON.stringify(matchedFragment));
-        response.setHeader('content-type', 'text/html');
-        return response.end('<!doctype html><title>');
+        expressResponse.setHeader('content-type', 'text/html');
+        return expressResponse.end('<!doctype html><title>');
       }
 
       // fetch the fragment only after ensuring route is processed
-      const fragmentResponse = await fetchFragment(request, matchedFragment);
+      const fragmentResponse = await fetchFragment(expressRequest, matchedFragment);
 
       // process fragment embedding only if it's a document request
-      if (request.headers['sec-fetch-dest'] === 'document') {
+      if (expressRequest.headers['sec-fetch-dest'] === 'document') {
         console.log('[Debug Info | Document request]');
         try {
           next();
           // await processFragmentForEmbedding(fragmentResponse, response, matchedFragment);
         } catch (err) {
           console.error('[Error] Error during fragment embedding:', err);
-          return renderErrorResponse(err, response);
+          return renderErrorResponse(err, expressResponse);
         }
       } else {
         // for non-document requests, just pipe the fragment directly
         if (fragmentResponse.body) {
-          const nodeReadableStream = NodeReadableStream.fromWeb(fragmentResponse.body as any);
-          nodeReadableStream.pipe(response);
+          expressResponse.setHeader('content-type', fragmentResponse.headers.get('content-type') || "text/plain");
+          const fragmentResponseReadable = NodeReadable.fromWeb(fragmentResponse.body as any);
+          
+          // otherwise just pipe the response back to the client
+          fragmentResponseReadable.pipe(expressResponse);
+
         } else {
           console.error('[Error] No body in fragment response');
-          response.status(500).send('<p>Fragment response body is empty.</p>');
+          expressResponse.status(500).send('<p>Fragment response body is empty.</p>');
         }
       }
     } else {
@@ -176,9 +180,29 @@ export function getMiddleware(
       );
 
       // pipe the fragment's body content through trumpet
-      const fragmentStream = NodeReadableStream.fromWeb(fragmentResponse.body as any);
+      const fragmentStream = NodeReadable.fromWeb(fragmentResponse.body as any);
       tr.pipe(fragmentStream as any);
     });
+  }
+
+  // process the fragment response for embedding into the host document
+  function processFragmentForReframing(
+    fragmentResponseReadable: NodeReadable,
+  ): NodeReadable {
+    console.log('[Debug Info | processFragmentForReframing]');
+
+    const tr = trumpet() as any;
+
+    // inject the fragment's content into the host document head
+    tr.selectAll('script', (element: TrumpetElement) => {
+      const scriptType = element.getAttribute('type', (scriptType: string) => {
+        element.setAttribute('data-script-type', scriptType);
+      });
+      element.setAttribute('type', 'inert');
+    });
+
+    // pipe the fragment's body content through trumpet
+    return fragmentResponseReadable.pipe(tr);
   }
 
   // render an error response if something goes wrong

@@ -29,7 +29,7 @@
     "express": "4.21.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "web-fragments": "latest",
+    "web-fragments": "github:igorminar/web-fragments#angular-fixes&path:packages/web-fragments",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {
