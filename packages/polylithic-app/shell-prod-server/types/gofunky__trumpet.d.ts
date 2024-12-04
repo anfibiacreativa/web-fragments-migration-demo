@@ -1,5 +1,5 @@
 declare module '@gofunky/trumpet' {
-  import { Readable, Writable } from 'stream';
+  import { Readable, Writable, Duplex } from 'stream';
 
   export default function trumpet(): Trumpet;
 
@@ -10,9 +10,11 @@ declare module '@gofunky/trumpet' {
     createWriteStream(selector: string): Writable;
   }
 
-  export interface TrumpetElement {
+  export interface TrumpetElement extends Duplex {
     createReadStream(): Readable;
     createWriteStream(): Writable;
+    getAttribute(name: string, callback: (value: string) => void): TrumpetElement;
+    getAttributes(name: string, callback: (attributes: Record<string, string>) => void): TrumpetElement
     setAttribute(name: string, value: string): void;
     removeAttribute(name: string): void;
   }

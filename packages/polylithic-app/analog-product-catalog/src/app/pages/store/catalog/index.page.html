@@ -5,7 +5,7 @@
       <app-checkout></app-checkout>
       <div class="grid">
         @for (product of products(); track product.id) {
-        <a [routerLink]="['/product', product.id]">
+        <a [routerLink]="['/store/product', product.id]">
           <app-product-card [product]="product" />
         </a>
         }
