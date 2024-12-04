@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { map, switchMap, of } from 'rxjs';
-import { ProductDetailComponent } from "../../components/product-detail/product-detail.component";
-import { ProductService } from '../../shared/services/product.service';
+import { ProductDetailComponent } from "../../../components/product-detail/product-detail.component";
+import { ProductService } from '../../../shared/services/product.service';
 
 @Component({
   standalone: true,

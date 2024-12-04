@@ -23,7 +23,7 @@ const gateway = new FragmentGateway({
 gateway.registerFragment({
   fragmentId: 'analog',
   prePiercingClassNames: ['analog'],
-  routePatterns: ['/_fragment/analog/:_*', '/catalog-page/:_*', '/ecommerce-page/:_*'],
+  routePatterns: ['/_fragment/analog/:_*', '/store/:_*', '/ecommerce-page/:_*'],
   upstream: 'http://localhost:4174',
   onSsrFetchError: () => ({
     response: new Response(
