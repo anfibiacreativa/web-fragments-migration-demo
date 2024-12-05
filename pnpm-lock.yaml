@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    web-fragments:
+      specifier: github:igorminar/web-fragments#angular-fixes&path:packages/web-fragments
+      version: 0.1.1
+
 importers:
 
   .: {}
@@ -257,8 +263,8 @@ importers:
         specifier: ^2.3.0
         version: 2.8.1
       web-fragments:
-        specifier: github:igorminar/web-fragments#angular-fixes&path:packages/web-fragments
-        version: https://codeload.github.com/igorminar/web-fragments/tar.gz/8a0e5044a56194d8581ae01745e98e841060185b#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0)
+        specifier: 'catalog:'
+        version: https://codeload.github.com/igorminar/web-fragments/tar.gz/02cc8b796b68dd95f0d22917ce77fa5923bac53a#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0)
       zone.js:
         specifier: ~0.14.3
         version: 0.14.10
@@ -342,8 +348,6 @@ importers:
         specifier: ^4.2.1
         version: 4.3.2(typescript@5.4.5)(vite@5.3.5(@types/node@20.14.11)(less@4.2.0)(sass@1.82.0)(stylus@0.64.0)(terser@5.31.6))
 
-  packages/polylithic-app/qwik-shopping-cart/server: {}
-
   packages/polylithic-app/shell-prod-server:
     dependencies:
       '@gofunky/trumpet':
@@ -353,8 +357,8 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1
       web-fragments:
-        specifier: ^0.1.1
-        version: 0.1.1(@cloudflare/workers-types@4.20241112.0)
+        specifier: 'catalog:'
+        version: https://codeload.github.com/igorminar/web-fragments/tar.gz/02cc8b796b68dd95f0d22917ce77fa5923bac53a#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0)
     devDependencies:
       '@types/express':
         specifier: ^5.0.0
@@ -3158,9 +3162,6 @@ packages:
 
   '@types/eslint@8.56.10':
     resolution: {integrity: sha512-Shavhk87gCtY2fhXDctcfS3e6FdxWkCx1iUZ9eEUbh7rTqlZT0/IzOkCOVt0fCjcFuZ9FPYfuezTBImfHCDBGQ==}
-
-  '@types/eslint@9.6.1':
-    resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
 
   '@types/estree-jsx@1.0.5':
     resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
@@ -7519,9 +7520,6 @@ packages:
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
-  reframed@0.1.2:
-    resolution: {integrity: sha512-XV/NWFyvR92N1g9lPdIogYjd/308mdiOIaRuOzfD5lrexvCDbUZs/Dybw0fnEQppJBceBVmmWPiHMeDRj+w16w==}
-
   regenerate-unicode-properties@10.2.0:
     resolution: {integrity: sha512-DqHn3DwbmmPVzeKj9woBadqmXxLvQoQIwu7nopMc72ztvxVmVk2SBhSnx67zuye5TP+lJsb/TBQsjLKhnDf3MA==}
     engines: {node: '>=4'}
@@ -8816,16 +8814,8 @@ packages:
   weak-lru-cache@1.2.2:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==}
 
-  web-fragments@0.1.1:
-    resolution: {integrity: sha512-3eg2Uv6ju3g9LFs5fOPbReNal4NLH0Nj7FWeX7S/GV61jQICtbIfPowGOEtTwSn4616kDIb8BycDYC018Jl4XQ==}
-    peerDependencies:
-      '@cloudflare/workers-types': ^4.20240620.0
-    peerDependenciesMeta:
-      '@cloudflare/workers-types':
-        optional: true
-
-  web-fragments@https://codeload.github.com/igorminar/web-fragments/tar.gz/8a0e5044a56194d8581ae01745e98e841060185b#path:packages/web-fragments:
-    resolution: {path: packages/web-fragments, tarball: https://codeload.github.com/igorminar/web-fragments/tar.gz/8a0e5044a56194d8581ae01745e98e841060185b}
+  web-fragments@https://codeload.github.com/igorminar/web-fragments/tar.gz/02cc8b796b68dd95f0d22917ce77fa5923bac53a#path:packages/web-fragments:
+    resolution: {path: packages/web-fragments, tarball: https://codeload.github.com/igorminar/web-fragments/tar.gz/02cc8b796b68dd95f0d22917ce77fa5923bac53a}
     version: 0.1.1
     peerDependencies:
       '@cloudflare/workers-types': ^4.20240620.0
@@ -13006,15 +12996,10 @@ snapshots:
 
   '@types/eslint-scope@3.7.7':
     dependencies:
-      '@types/eslint': 9.6.1
+      '@types/eslint': 8.56.10
       '@types/estree': 1.0.6
 
   '@types/eslint@8.56.10':
-    dependencies:
-      '@types/estree': 1.0.6
-      '@types/json-schema': 7.0.15
-
-  '@types/eslint@9.6.1':
     dependencies:
       '@types/estree': 1.0.6
       '@types/json-schema': 7.0.15
@@ -18491,8 +18476,6 @@ snapshots:
 
   reflect-metadata@0.2.2: {}
 
-  reframed@0.1.2: {}
-
   regenerate-unicode-properties@10.2.0:
     dependencies:
       regenerate: 1.4.2
@@ -20053,13 +20036,7 @@ snapshots:
 
   weak-lru-cache@1.2.2: {}
 
-  web-fragments@0.1.1(@cloudflare/workers-types@4.20241112.0):
-    dependencies:
-      reframed: 0.1.2
-    optionalDependencies:
-      '@cloudflare/workers-types': 4.20241112.0
-
-  web-fragments@https://codeload.github.com/igorminar/web-fragments/tar.gz/8a0e5044a56194d8581ae01745e98e841060185b#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0):
+  web-fragments@https://codeload.github.com/igorminar/web-fragments/tar.gz/02cc8b796b68dd95f0d22917ce77fa5923bac53a#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20241112.0
 

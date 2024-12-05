@@ -14,7 +14,7 @@
   "dependencies": {
     "@gofunky/trumpet": "^3.0.3",
     "express": "^5.0.1",
-    "web-fragments": "^0.1.1"
+    "web-fragments": "catalog:"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",

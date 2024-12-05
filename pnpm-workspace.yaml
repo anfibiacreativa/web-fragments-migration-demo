@@ -1,2 +1,5 @@
 packages:
   - "./packages/**"
+
+catalog:
+  web-fragments: github:igorminar/web-fragments#angular-fixes&path:packages/web-fragments
