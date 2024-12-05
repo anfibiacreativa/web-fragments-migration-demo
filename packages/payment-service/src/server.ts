@@ -4,6 +4,7 @@ import { createPaymentIntent, getPaymentStatus } from './mockStripe';
 
 export const createServer = (): FastifyInstance => {
   const fastify = Fastify();
+  console.log('Creating server');
 
   // Register CORS plugin
   fastify.register(fastifyCors, {
