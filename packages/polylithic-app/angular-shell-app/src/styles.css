@@ -36,7 +36,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Ensure body fills the entire viewport height */
-  padding: 20px;
 }
 
 h1 {

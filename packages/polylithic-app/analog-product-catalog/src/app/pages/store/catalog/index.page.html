@@ -2,6 +2,7 @@
   <h1>Tech T-Shirts</h1>
   <div class="layout">
     <div class="products">
+      <app-checkout></app-checkout>
       <div class="grid">
         @for (product of products(); track product.id) {
         <a [routerLink]="['/store/product', product.id]">

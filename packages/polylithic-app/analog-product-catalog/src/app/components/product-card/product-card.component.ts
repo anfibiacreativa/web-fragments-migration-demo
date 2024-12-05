@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { Product } from '../../models/product.model';
 import { StarRatingComponent } from '../star-rating/star-rating.component';
+import { CartService } from '../../shared/services/cart.service';
 
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, StarRatingComponent],
+  imports: [CommonModule, StarRatingComponent],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.css'
 })
@@ -15,8 +15,9 @@ export class ProductCardComponent {
   @Input() product!: Product;
   @Input() detailed = false;
 
+  constructor(private cartService: CartService ) {}
+
   addToCart(): void {
-    // we need to implement this with the postMessage API
-    alert('Not implemented!');
+    this.cartService.addToCart(this.product);
   }
 }
