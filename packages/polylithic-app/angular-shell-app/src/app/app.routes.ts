@@ -9,6 +9,5 @@ export const routes: Routes = [
   { path: 'standalone-cart', component: QwikPageComponent },
   { matcher: (segments) => {
     return segments[0].path === 'store' ? {consumed: segments} : null;
-  }, component: AnalogPageComponent },
-  { path: 'ecommerce-page', component: EcommercePageComponent }
+  }, component: EcommercePageComponent },
 ];
