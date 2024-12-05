@@ -16,7 +16,7 @@ export default function (opts: RenderToStreamOptions) {
 		containerTagName: "qwik-fragment",
 	serverData: {
 			...opts.serverData,
-			url: "http://localhost:4208/qwik-page",
+			url: "http://localhost:4208/cart",
 		},
 		qwikLoader: {
 			include: "always",

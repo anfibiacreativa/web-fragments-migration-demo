@@ -40,7 +40,7 @@ gateway.registerFragment({
 gateway.registerFragment({
   fragmentId: 'qwik',
   prePiercingClassNames: ['qwik'],
-  routePatterns: ['/qwik-page/:_*', '/_fragment/qwik/:_*', '/ecommerce-page/:_*'],
+  routePatterns: ['/cart/:_*', '/_fragment/qwik/:_*'],
   upstream: 'http://localhost:4173',
   onSsrFetchError: () => ({
     response: new Response(

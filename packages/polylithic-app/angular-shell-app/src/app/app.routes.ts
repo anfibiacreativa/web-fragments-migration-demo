@@ -6,7 +6,7 @@ import { EcommercePageComponent } from './components/ecommerce-component/ecommer
 
 export const routes: Routes = [
   { path: '', component: HomepageComponent },
-  { path: 'qwik-page', component: QwikPageComponent },
+  { path: 'standalone-cart', component: QwikPageComponent },
   { matcher: (segments) => {
     return segments[0].path === 'store' ? {consumed: segments} : null;
   }, component: AnalogPageComponent },
