@@ -15,6 +15,11 @@ export class CartService {
   }
 
   addToCart(product: Product): void {
+    const bc = new BroadcastChannel("/cart");
+    console.log('broadcasting add_to_cart to /cart channel', product);
+    bc.postMessage({ type: 'add_to_cart', product });
+
+    // todo: probably remove?
     const productIndex = this.cartItems.findIndex(item => item.product.id === product.id);
     if (productIndex === -1) {
       this.cartItems.push({ product, quantity: 1 });

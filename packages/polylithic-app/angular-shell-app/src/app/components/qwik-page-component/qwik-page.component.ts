@@ -22,9 +22,9 @@ export class QwikPageComponent {
       rating: 4.9,
     };
     
-    const base64Product = btoa(JSON.stringify(product));
-    
-    window.postMessage({ type: 'add_to_cart', product: base64Product }, '*');
+    const bc = new BroadcastChannel("/cart");
+    console.log('broadcasting add_to_cart to /cart channel', product);
+    bc.postMessage({ type: 'add_to_cart', product });
   }
 
 }

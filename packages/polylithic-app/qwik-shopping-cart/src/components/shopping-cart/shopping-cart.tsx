@@ -46,14 +46,14 @@ export const ShoppingCart = component$(() => {
 
   // Handle add to cart via postMessage
   useVisibleTask$(() => {
+    console.log('registering BC /cart from qwik');
     const handleMessage = (event: MessageEvent) => {
+      console.log('received add_to_cart message in /cart channel', event);
       if (event.origin !== window.origin) return;
 
       if (event.data && event.data.type === 'add_to_cart') {
-        const decodedData = atob(event.data.product);
 
-        try {
-          const product: Product = JSON.parse(decodedData);
+          const product: Product = event.data.product;
 
           const existingItemIndex = cart.items.findIndex((item) => item.product.id === product.id);
           if (existingItemIndex !== -1) {
@@ -63,16 +63,17 @@ export const ShoppingCart = component$(() => {
           }
 
           saveCartToLocalStorage();
-        } catch (error) {
-          console.error('Failed to decode or parse product:', error);
-        }
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    const bc = new BroadcastChannel("/cart");
+    bc.addEventListener('message', handleMessage);
+    
+    //window.addEventListener('message', handleMessage);
 
     return () => {
-      window.removeEventListener('message', handleMessage);
+      //window.removeEventListener('message', handleMessage);
+      bc.removeEventListener('message', handleMessage);
     };
   });
 
