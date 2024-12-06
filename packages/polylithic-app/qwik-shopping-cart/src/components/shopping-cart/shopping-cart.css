@@ -50,3 +50,21 @@
   color: white;
   font-size: small;
 }
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background-color: #2c3e50;
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #34495e;
+}
