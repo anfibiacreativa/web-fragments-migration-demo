@@ -1,12 +1,12 @@
-<button
-  class="btn btn-primary"
+<div
+  class="cart-display"
   [class.zoom]="zoomAnimation()"
-  (click)="handleCheckout()"
 >
   <div class="checkout-content">
+    <span>You have </span>
     <div class="cart-icon">
       <span class="cart-icon-number">{{ itemCount() }}</span>
     </div>
-    <span>Checkout</span>
+    <span> items in the cart</span>
   </div>
-</button>
+</div>

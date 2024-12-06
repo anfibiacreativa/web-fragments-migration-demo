@@ -4,12 +4,12 @@ import { PaymentService } from '../../shared/services/payment.service';
 import { signal } from '@angular/core';
 
 @Component({
-  selector: 'app-checkout',
-  templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.css'],
+  selector: 'app-cart-display',
+  templateUrl: './cart-display.component.html',
+  styleUrls: ['./cart-display.component.css'],
   standalone: true
 })
-export class CheckoutComponent implements OnInit {
+export class CartDisplayComponent implements OnInit {
   itemCount = signal(0);
   zoomAnimation = signal(false);
   totalAmount = signal(0);
@@ -31,14 +31,5 @@ export class CheckoutComponent implements OnInit {
   triggerZoomAnimation() {
     this.zoomAnimation.set(true);
     setTimeout(() => this.zoomAnimation.set(false), 1000);  // Reset animation after 1 second
-  }
-
-  handleCheckout(): void {
-    // this is a mock, hence the hardcoded fake id
-    const total = this.totalAmount();
-    const currency = 'EUR';
-    const fakeUserId = 'user_fake_id';
-    this.paymentService.createPaymentIntent(total, currency, fakeUserId);
-    console.log(`[Payment Service]: Payment intent made for user ${fakeUserId}, of ${currency} ${total}`);
   }
 }

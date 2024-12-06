@@ -1,17 +1,6 @@
-/* src/app/components/checkout/checkout.component.css */
-.checkout-button {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 15px;
-  background-color: #a7b9c6;
-  color: #2c3e50;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: transform 0.2s ease-in-out;
+.cart-display {
+  border: 1px solid #9bd5ff;
+  padding: 5px 10px;
 }
 
 .btn.zoom {
@@ -19,11 +8,6 @@
   animation: zoomOut 0.2s forwards;
 }
 
-.checkout-button:hover {
-  transition: all .3s linear;
-  background-color: #9bd5ff;
-  color: #2c3e50;
-}
 
 @keyframes zoomOut {
   0% {
@@ -48,6 +32,7 @@
   color: #2c3e50;
   font-weight: bold;
   width: 20px;
+  margin-left: 10px;
 }
 
 .cart-icon-number {

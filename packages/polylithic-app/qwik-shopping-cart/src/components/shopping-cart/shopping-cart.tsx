@@ -1,5 +1,5 @@
-import { component$, useStore, useVisibleTask$, $ } from '@builder.io/qwik';
-import { initialProducts } from '../../data/data'; // Assuming initial products are defined here
+import { component$, useStore, useSignal, useVisibleTask$, $ } from '@builder.io/qwik';
+import { initialProducts } from '../../data/data';
 import './shopping-cart.css';
 
 export interface CartItem {
@@ -19,14 +19,22 @@ export interface Product {
 }
 
 export const ShoppingCart = component$(() => {
-  const cart = useStore<{ items: CartItem[] }>({ items: [] });
+  const cart = useStore<{ items: CartItem[]; message: string }>({ items: [], message: '' });
 
-  // Save cart to localStorage
   const saveCartToLocalStorage = $(() => {
     localStorage.setItem('shoppingCart', JSON.stringify(cart.items));
   });
 
-  // Load cart from localStorage or fallback to initial products
+  const clearCart = $(() => {
+    cart.items = [];
+    saveCartToLocalStorage();
+
+    const bc = new BroadcastChannel('/cart');
+    bc.postMessage({ type: 'cart_cleared' });
+    bc.close();
+  });
+
+  // load cart from localStorage or fallback to initial products
   useVisibleTask$(() => {
     const savedCart = localStorage.getItem('shoppingCart');
     if (savedCart) {
@@ -35,55 +43,67 @@ export const ShoppingCart = component$(() => {
         cart.items = parsedCart;
       } catch (error) {
         console.error('Failed to parse cart from localStorage:', error);
-        cart.items = [...initialProducts];  // Fallback to initial products
-        saveCartToLocalStorage();  // Save fallback products to localStorage
+        cart.items = [...initialProducts];
+        saveCartToLocalStorage();
       }
     } else {
-      cart.items = [...initialProducts];  // Fallback to initial products if nothing in localStorage
-      saveCartToLocalStorage();  // Save initial products to localStorage
+      cart.items = [...initialProducts];
+      saveCartToLocalStorage();
     }
   });
 
-  // Handle add to cart via postMessage
-  useVisibleTask$(() => {
-    console.log('registering BC /cart from qwik');
-    const handleMessage = (event: MessageEvent) => {
-      console.log('received add_to_cart message in /cart channel', event);
-      if (event.origin !== window.origin) return;
+  const progress = useSignal(0);
 
-      if (event.data && event.data.type === 'add_to_cart') {
+  // proceed to checkout
+  const checkout = $(async () => {
+    const userId = 'fake_user_id';
+    const currency = 'EUR';
+    const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-          const product: Product = event.data.product;
+    try {
+      const response = await fetch('http://localhost:3000/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: totalAmount,
+          currency,
+          userId,
+        }),
+      });
 
-          const existingItemIndex = cart.items.findIndex((item) => item.product.id === product.id);
-          if (existingItemIndex !== -1) {
-            cart.items[existingItemIndex].quantity += 1;
-          } else {
-            cart.items.push({ product, quantity: 1 });
-          }
-
-          saveCartToLocalStorage();
+      if (!response.ok) {
+        throw new Error(`Failed to create payment: ${response.statusText}`);
       }
-    };
 
-    const bc = new BroadcastChannel("/cart");
-    bc.addEventListener('message', handleMessage);
-    
-    //window.addEventListener('message', handleMessage);
+      const data = await response.json();
+      console.log('Payment intent created:', data);
 
-    return () => {
-      //window.removeEventListener('message', handleMessage);
-      bc.removeEventListener('message', handleMessage);
-    };
+
+      cart.message = 'Payment complete. You will get your order soon!';
+      let currentProgress = 0;
+      const interval = setInterval(() => {
+        currentProgress += 5;
+        progress.value = currentProgress;
+
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+          clearCart();
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Checkout error:', error);
+    }
   });
 
-  // Remove all instances of a product
+  // remove all instances of a product
   const removeItems = $((id: number) => {
     cart.items = cart.items.filter((item) => item.product.id !== id);
     saveCartToLocalStorage();
   });
 
-  // Remove one instance of a product
+  // remove one instance of a product
   const removeItem = $((id: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
@@ -97,7 +117,7 @@ export const ShoppingCart = component$(() => {
     saveCartToLocalStorage();
   });
 
-  // Add one more instance of a product
+  // add one more instance of a product
   const addItem = $((id: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
@@ -107,7 +127,7 @@ export const ShoppingCart = component$(() => {
     saveCartToLocalStorage();
   });
 
-  // Update product quantity
+  // update product quantity
   const updateQuantity = $((id: number, quantity: number) => {
     const itemIndex = cart.items.findIndex((item) => item.product.id === id);
     if (itemIndex !== -1) {
@@ -127,7 +147,14 @@ export const ShoppingCart = component$(() => {
       <div class="cart">
         <h2>Shopping Cart</h2>
 
-        {cart.items.length === 0 ? (
+        {cart.message ? (
+           <>
+           <p class="success-message">{cart.message}</p>
+           <div class="progress-bar">
+             <div class="progress" style={{ width: `${progress.value}%` }}></div>
+           </div>
+         </>
+        ) : cart.items.length === 0 ? (
           <p>Your cart is empty</p>
         ) : (
           <>
@@ -163,6 +190,9 @@ export const ShoppingCart = component$(() => {
             <div class="cart-summary">
               <p class="total">Total: ${total.toFixed(2)}</p>
             </div>
+            <button class="btn btn-primary" onClick$={checkout}>
+              Proceed to checkout
+            </button>
           </>
         )}
       </div>
