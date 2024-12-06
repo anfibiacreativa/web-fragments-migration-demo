@@ -250,3 +250,57 @@ li:active a {
   z-index: 1000;
 }
 
+fragment-outlet {
+  border: 5px dotted transparent;
+  border-radius: 20px;
+}
+
+/* add borders */
+body.fragment-border fragment-outlet {
+  border-color: rgb(65, 155, 234);
+}
+
+.toggle-pill {
+  width: 50px;
+  height: 24px;
+  background-color: #ddd;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.toggle-pill.active {
+  background: #419bea;
+}
+
+.toggle-knob {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  transform: translateX(0);
+}
+
+.toggle-pill.active .toggle-knob {
+  transform: translateX(26px);
+}
+
+.tiny-text {
+  font-size: small;
+  color: gray;
+  line-height: 1.5;
+  padding-left: 4px;
+}
+
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 200px;
+}
