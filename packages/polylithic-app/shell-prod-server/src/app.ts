@@ -7,13 +7,14 @@ import { FragmentGateway } from 'web-fragments/gateway';
 // start the gateway
 const gateway = new FragmentGateway({
   prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
-      fragment-host[data-piercing="true"] {
-        position: absolute;
-        z-index: 9999999999999999999999999999999;
+      fragment-host[data-piercing="true"] { 
+        z-index: 1;
 
-        &.remix {
-            bottom: 16%;
-            left: 15%;
+        &.analog {
+            width: 390px;
+            position: relative;
+            top: 67px;
+            left: -173px;
         }
       }
     </style>`,

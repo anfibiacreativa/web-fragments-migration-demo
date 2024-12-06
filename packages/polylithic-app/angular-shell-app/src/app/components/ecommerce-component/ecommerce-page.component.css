@@ -5,15 +5,9 @@
   padding: 16px;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 512px) {
   .shop-wrapper {
-    grid-template-columns: 3fr 1fr;
-  }
-}
-
-@media (min-width: 512px) and (max-width: 1023px) {
-  .shop-wrapper {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 400px 400px;
   }
 }
 
