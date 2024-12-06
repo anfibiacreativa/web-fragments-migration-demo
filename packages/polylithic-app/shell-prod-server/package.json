@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@gofunky/trumpet": "^3.0.3",
-    "@worker-tools/html-rewriter": "0.1.0-pre.19",
     "express": "^5.0.1",
     "htmlrewriter": "^0.0.12",
     "web-fragments": "catalog:"

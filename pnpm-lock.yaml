@@ -355,9 +355,6 @@ importers:
       '@gofunky/trumpet':
         specifier: ^3.0.3
         version: 3.0.3
-      '@worker-tools/html-rewriter':
-        specifier: 0.1.0-pre.19
-        version: 0.1.0-pre.19
       express:
         specifier: ^5.0.1
         version: 5.0.1
@@ -3101,12 +3098,6 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
-  '@stardazed/streams-compression@1.0.0':
-    resolution: {integrity: sha512-SQCiwxdIVJ5xxUBYptN+fc+tJpSDbxQuJ0+3u2SmHjIzr6JIRZ28AVFtFnGy6x6j3UBlaLx73w9rC6UAFxnd1g==}
-
-  '@stardazed/zlib@1.0.1':
-    resolution: {integrity: sha512-MS6PCYiRNJ32c69+3NPyL+bu7LpiFDvMcBXnlhQnF8CKMG0R/xRVCCo422NPkQ0+Cox3xKpk5Lc1LfWFS4b3cw==}
-
   '@stripe/stripe-js@2.4.0':
     resolution: {integrity: sha512-WFkQx1mbs2b5+7looI9IV1BLa3bIApuN3ehp9FP58xGg7KL9hCHDECgW3BwO9l9L+xBPVAD7Yjn1EhGe6EDTeA==}
 
@@ -3514,12 +3505,6 @@ packages:
 
   '@webcomponents/custom-elements@1.6.0':
     resolution: {integrity: sha512-CqTpxOlUCPWRNUPZDxT5v2NnHXA4oox612iUGnmTUGQFhZ1Gkj8kirtl/2wcF6MqX7+PqqicZzOCBKKfIn0dww==}
-
-  '@worker-tools/html-rewriter@0.1.0-pre.19':
-    resolution: {integrity: sha512-IUbEZwvSdp8vtaB1LAZ/sBRJGNycd9a8cbkqO05rMEPm5MC59Sb+wiGCWaaRXrwQLDAyWeod4QC/q0TuSUI5EA==}
-
-  '@worker-tools/resolvable-promise@0.2.0-pre.6':
-    resolution: {integrity: sha512-+5RcuruCLB/P3FYYb376RgyImXaq9BBQoOskUbgPyNK3O0AXPakrXUj1EELv+lcnUSdFws/ufdrrWODLJyoTmg==}
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -12947,12 +12932,6 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
-  '@stardazed/streams-compression@1.0.0':
-    dependencies:
-      '@stardazed/zlib': 1.0.1
-
-  '@stardazed/zlib@1.0.1': {}
-
   '@stripe/stripe-js@2.4.0': {}
 
   '@swc/helpers@0.5.15':
@@ -13490,13 +13469,6 @@ snapshots:
       '@xtuc/long': 4.2.2
 
   '@webcomponents/custom-elements@1.6.0': {}
-
-  '@worker-tools/html-rewriter@0.1.0-pre.19':
-    dependencies:
-      '@stardazed/streams-compression': 1.0.0
-      '@worker-tools/resolvable-promise': 0.2.0-pre.6
-
-  '@worker-tools/resolvable-promise@0.2.0-pre.6': {}
 
   '@xtuc/ieee754@1.2.0': {}
 
