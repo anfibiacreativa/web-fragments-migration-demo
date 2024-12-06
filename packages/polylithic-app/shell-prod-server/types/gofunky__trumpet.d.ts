@@ -10,8 +10,8 @@ declare module '@gofunky/trumpet' {
   }
 
   export interface TrumpetElement {
-    createReadStream(): Readable;
-    createWriteStream(): Writable;
+    createReadStream(options?: {outer: boolean}): Readable;
+    createWriteStream(options?: {outer: boolean}): Writable;
     createStream(): Duplex;
     getAttribute(name: string, callback: (value: string) => void): TrumpetElement;
     getAttributes(name: string, callback: (attributes: Record<string, string>) => void): TrumpetElement

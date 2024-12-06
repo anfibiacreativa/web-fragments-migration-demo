@@ -193,16 +193,17 @@ export function getMiddleware(
     });
 
 
-    tr.select('body', async (body: TrumpetElement) => {
-      const bodyStreamR = body.createReadStream();
-      const bodyStreamW = body.createWriteStream();
+    tr.select('footer', async (body: TrumpetElement) => {
+      const bodyStreamR = body.createReadStream({outer: true});
+      const bodyStreamW = body.createWriteStream({outer: true});
 
       const processedBody = await processFragmentForReframing(fragmentResponse).text();
       mergeStreams(
-        bodyStreamR,
+        
         NodeReadable.from(fragmentHostPrefix),
         NodeReadable.from(processedBody),
         NodeReadable.from(fragmentHostSuffix),
+        bodyStreamR,
       ).pipe(bodyStreamW);
     });
 
