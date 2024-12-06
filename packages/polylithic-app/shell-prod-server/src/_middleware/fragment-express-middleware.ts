@@ -164,7 +164,7 @@ export function getMiddleware(
   /**
    * Embeds the fragment SSR stream into the final response.
    * 
-   * This implementation uses Trumpet, which works for this use-case but is not reliable for other html rewriting needs
+   * TODO: This implementation uses Trumpet, which works for this use-case but is not reliable for other html rewriting needs
    * so we should just switch to HTMLRewriter as started in embedFragmentSSR2.
    */
   function embedFragmentSSR(fragmentResponse: Response, fragmentConfig: FragmentConfig, fragmentSrc: string): Trumpet {
@@ -184,7 +184,6 @@ export function getMiddleware(
         NodeReadable.from(gateway.prePiercingStyles)
       ).pipe(headStreamW);
     });
-
 
     // inject the fragment's SSR into the host document body
     const { prefix: fragmentHostPrefix, suffix: fragmentHostSuffix } = fragmentHostInitialization({
