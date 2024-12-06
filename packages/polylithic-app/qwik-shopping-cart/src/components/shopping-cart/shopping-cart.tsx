@@ -25,33 +25,6 @@ export const ShoppingCart = component$(() => {
     localStorage.setItem('shoppingCart', JSON.stringify(cart.items));
   });
 
-  const clearCart = $(() => {
-    cart.items = [];
-    saveCartToLocalStorage();
-
-    const bc = new BroadcastChannel('/cart');
-    bc.postMessage({ type: 'cart_cleared' });
-    bc.close();
-  });
-
-  // load cart from localStorage or fallback to initial products
-  useVisibleTask$(() => {
-    const savedCart = localStorage.getItem('shoppingCart');
-    if (savedCart) {
-      try {
-        const parsedCart = JSON.parse(savedCart);
-        cart.items = parsedCart;
-      } catch (error) {
-        console.error('Failed to parse cart from localStorage:', error);
-        cart.items = [...initialProducts];
-        saveCartToLocalStorage();
-      }
-    } else {
-      cart.items = [...initialProducts];
-      saveCartToLocalStorage();
-    }
-  });
-
   const progress = useSignal(0);
 
   // proceed to checkout
@@ -118,11 +91,13 @@ export const ShoppingCart = component$(() => {
   });
 
   // add one more instance of a product
-  const addItem = $((id: number) => {
-    const itemIndex = cart.items.findIndex((item) => item.product.id === id);
+  const addItem = $((product: Product) => {
+    const itemIndex = cart.items.findIndex((item) => item.product.id === product.id);
     if (itemIndex !== -1) {
       const item = cart.items[itemIndex];
       cart.items[itemIndex] = { ...item, quantity: item.quantity + 1 };
+    } else {
+      cart.items.push({ product, quantity: 1 });
     }
     saveCartToLocalStorage();
   });
@@ -141,6 +116,46 @@ export const ShoppingCart = component$(() => {
   });
 
   const total = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  const clearCart = $(() => {
+    cart.items = [];
+    saveCartToLocalStorage();
+
+    const bc = new BroadcastChannel('/cart');
+    bc.postMessage({ type: 'cart_cleared' });
+    bc.close();
+  });
+
+  // load cart from localStorage or fallback to initial products
+  useVisibleTask$(() => {
+    const savedCart = localStorage.getItem('shoppingCart');
+    if (savedCart) {
+      try {
+        const parsedCart = JSON.parse(savedCart);
+        cart.items = parsedCart;
+      } catch (error) {
+        console.error('Failed to parse cart from localStorage:', error);
+        cart.items = [...initialProducts];
+        saveCartToLocalStorage();
+      }
+    } else {
+      cart.items = [...initialProducts];
+      saveCartToLocalStorage();
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      const { type, product } = event.data;
+      if (type === 'add_to_cart') {
+        addItem(product);
+      }
+    };
+    const bc = new BroadcastChannel("/cart");
+    bc.addEventListener('message', handleMessage);
+
+    return () => {
+      bc.removeEventListener('message', handleMessage);
+    };
+  });
 
   return (
     <>
@@ -178,7 +193,7 @@ export const ShoppingCart = component$(() => {
                           updateQuantity(item.product.id, parseInt((e.target as HTMLInputElement).value, 10))
                         }
                       />
-                      <button class="btn" onClick$={() => addItem(item.product.id)}>+</button>
+                      <button class="btn" onClick$={() => addItem(item.product)}>+</button>
                     </div>
                   </div>
                   <button class="btn remove-btn" onClick$={() => removeItems(item.product.id)}>
