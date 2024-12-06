@@ -3,16 +3,16 @@ declare module '@gofunky/trumpet' {
 
   export default function trumpet(): Trumpet;
 
-  export interface Trumpet {
-    pipe(destination: Writable, options?: { end?: boolean }): Writable;
-    select(selector: string, callback: (element: TrumpetElement) => void): void;
+  export interface Trumpet extends Duplex {
+    select(selector: string, callback?: (element: TrumpetElement) => void): TrumpetElement;
     selectAll(selector: string, callback: (element: TrumpetElement) => void): void;
     createWriteStream(selector: string): Writable;
   }
 
-  export interface TrumpetElement extends Duplex {
+  export interface TrumpetElement {
     createReadStream(): Readable;
     createWriteStream(): Writable;
+    createStream(): Duplex;
     getAttribute(name: string, callback: (value: string) => void): TrumpetElement;
     getAttributes(name: string, callback: (attributes: Record<string, string>) => void): TrumpetElement
     setAttribute(name: string, value: string): void;
