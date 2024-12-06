@@ -355,9 +355,15 @@ importers:
       '@gofunky/trumpet':
         specifier: ^3.0.3
         version: 3.0.3
+      '@worker-tools/html-rewriter':
+        specifier: 0.1.0-pre.19
+        version: 0.1.0-pre.19
       express:
         specifier: ^5.0.1
         version: 5.0.1
+      htmlrewriter:
+        specifier: ^0.0.12
+        version: 0.0.12
       web-fragments:
         specifier: 'catalog:'
         version: https://codeload.github.com/igorminar/web-fragments/tar.gz/0ceb98b0b9c2bb00198d4c6664edd80307e69467#path:packages/web-fragments(@cloudflare/workers-types@4.20241112.0)
@@ -3095,6 +3101,12 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
+  '@stardazed/streams-compression@1.0.0':
+    resolution: {integrity: sha512-SQCiwxdIVJ5xxUBYptN+fc+tJpSDbxQuJ0+3u2SmHjIzr6JIRZ28AVFtFnGy6x6j3UBlaLx73w9rC6UAFxnd1g==}
+
+  '@stardazed/zlib@1.0.1':
+    resolution: {integrity: sha512-MS6PCYiRNJ32c69+3NPyL+bu7LpiFDvMcBXnlhQnF8CKMG0R/xRVCCo422NPkQ0+Cox3xKpk5Lc1LfWFS4b3cw==}
+
   '@stripe/stripe-js@2.4.0':
     resolution: {integrity: sha512-WFkQx1mbs2b5+7looI9IV1BLa3bIApuN3ehp9FP58xGg7KL9hCHDECgW3BwO9l9L+xBPVAD7Yjn1EhGe6EDTeA==}
 
@@ -3164,9 +3176,6 @@ packages:
 
   '@types/eslint@8.56.10':
     resolution: {integrity: sha512-Shavhk87gCtY2fhXDctcfS3e6FdxWkCx1iUZ9eEUbh7rTqlZT0/IzOkCOVt0fCjcFuZ9FPYfuezTBImfHCDBGQ==}
-
-  '@types/eslint@9.6.1':
-    resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
 
   '@types/estree-jsx@1.0.5':
     resolution: {integrity: sha512-52CcUVNFyfb1A2ALocQw/Dd1BQFNmSdkuC3BkZ6iqhdMfQz7JWOFRuJFloOzjk+6WijU56m9oKXFAXc7o3Towg==}
@@ -3505,6 +3514,12 @@ packages:
 
   '@webcomponents/custom-elements@1.6.0':
     resolution: {integrity: sha512-CqTpxOlUCPWRNUPZDxT5v2NnHXA4oox612iUGnmTUGQFhZ1Gkj8kirtl/2wcF6MqX7+PqqicZzOCBKKfIn0dww==}
+
+  '@worker-tools/html-rewriter@0.1.0-pre.19':
+    resolution: {integrity: sha512-IUbEZwvSdp8vtaB1LAZ/sBRJGNycd9a8cbkqO05rMEPm5MC59Sb+wiGCWaaRXrwQLDAyWeod4QC/q0TuSUI5EA==}
+
+  '@worker-tools/resolvable-promise@0.2.0-pre.6':
+    resolution: {integrity: sha512-+5RcuruCLB/P3FYYb376RgyImXaq9BBQoOskUbgPyNK3O0AXPakrXUj1EELv+lcnUSdFws/ufdrrWODLJyoTmg==}
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -5422,6 +5437,9 @@ packages:
 
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
+
+  htmlrewriter@0.0.12:
+    resolution: {integrity: sha512-Tw+wORUlNL9+JQCIo7J4SuX/T3M1xRAC/0XaifnRPLHCX95jbZy/0CI06n7BhuFQJhSdNA7ZoxnStJmF31FZRw==}
 
   http-assert@1.5.0:
     resolution: {integrity: sha512-uPpH7OKX4H25hBmU6G1jWNaqJGpTXxey+YOUizJUAgu0AjLUeC8D73hTrhvDS5D+GJN1DN1+hhc/eF/wpxtp0w==}
@@ -12929,6 +12947,12 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
+  '@stardazed/streams-compression@1.0.0':
+    dependencies:
+      '@stardazed/zlib': 1.0.1
+
+  '@stardazed/zlib@1.0.1': {}
+
   '@stripe/stripe-js@2.4.0': {}
 
   '@swc/helpers@0.5.15':
@@ -12999,15 +13023,10 @@ snapshots:
 
   '@types/eslint-scope@3.7.7':
     dependencies:
-      '@types/eslint': 9.6.1
+      '@types/eslint': 8.56.10
       '@types/estree': 1.0.6
 
   '@types/eslint@8.56.10':
-    dependencies:
-      '@types/estree': 1.0.6
-      '@types/json-schema': 7.0.15
-
-  '@types/eslint@9.6.1':
     dependencies:
       '@types/estree': 1.0.6
       '@types/json-schema': 7.0.15
@@ -13471,6 +13490,13 @@ snapshots:
       '@xtuc/long': 4.2.2
 
   '@webcomponents/custom-elements@1.6.0': {}
+
+  '@worker-tools/html-rewriter@0.1.0-pre.19':
+    dependencies:
+      '@stardazed/streams-compression': 1.0.0
+      '@worker-tools/resolvable-promise': 0.2.0-pre.6
+
+  '@worker-tools/resolvable-promise@0.2.0-pre.6': {}
 
   '@xtuc/ieee754@1.2.0': {}
 
@@ -15893,6 +15919,8 @@ snapshots:
       domhandler: 5.0.3
       domutils: 3.1.0
       entities: 4.5.0
+
+  htmlrewriter@0.0.12: {}
 
   http-assert@1.5.0:
     dependencies:

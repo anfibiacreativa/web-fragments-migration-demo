@@ -5,10 +5,10 @@ import type {
 } from 'express';
 import { FragmentConfig, FragmentGateway } from 'web-fragments/gateway';
 import trumpet, { Trumpet, TrumpetElement } from '@gofunky/trumpet';
+import { HTMLRewriter } from 'htmlrewriter';
 import fs from 'node:fs';
 import path from 'node:path';
 import { Readable as NodeReadable, Writable as NodeWritable, Duplex as NodeDuplex, PassThrough as NodePassThrough } from 'node:stream';
-import { text } from 'node:stream/consumers';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -67,11 +67,11 @@ export function getMiddleware(
           //next();
           if (!fragmentResponse.ok) throw new Error(`Fragment response not ok: ${fragmentResponse.status}`);
 
-          const fragmentResponseBody = await fragmentResponse.text();
+          //const fragmentResponseBody = await fragmentResponse.text();
           
           expressResponse.setHeader('content-type', 'text/html');
           fs.createReadStream(path.resolve(__dirname, '../angular-shell-app/browser/index.html'))
-            .pipe(embedFragmentSSR(fragmentResponseBody, matchedFragment))
+            .pipe(embedFragmentSSR(fragmentResponse, matchedFragment))
             .pipe(expressResponse);
         } catch (err) {
           console.error('[Error] Error during fragment embedding:', err);
@@ -152,7 +152,7 @@ export function getMiddleware(
   }
 
 
-  function embedFragmentSSR(fragmentResponseBody: string, fragmentConfig: FragmentConfig): Trumpet {
+  function embedFragmentSSR(fragmentResponse: Response, fragmentConfig: FragmentConfig): Trumpet {
 
     const { fragmentId, prePiercingClassNames } = fragmentConfig;
 
@@ -174,11 +174,12 @@ export function getMiddleware(
     // inject the fragment's SSR into the host document body
     const {prefix: fragmentHostPrefix, suffix: fragmentHostSuffix} = fragmentHostInitialization({
       fragmentId,
+      fragmentSrc: "/store/catalog",
       classNames: prePiercingClassNames.join(" "),
     });
 
 
-    tr.select('body', (body: TrumpetElement) => {
+    tr.select('body', async (body: TrumpetElement) => {
       const bodyStreamR = body.createReadStream();
       const bodyStreamW = body.createWriteStream();
       
@@ -190,11 +191,14 @@ export function getMiddleware(
       // NodeReadable.from(fragmentResponseBody).pipe(bodyStreamW, {end: true});
       // NodeReadable.from('<!-- 22 -->').pipe(bodyStreamW, {end: false});
       // NodeReadable.from(fragmentHostSuffix).pipe(bodyStreamW, {end: true});
+      const processedBody = await processFragmentForReframing(fragmentResponse).text();
       mergeStreams(
         bodyStreamR,
         NodeReadable.from(fragmentHostPrefix),
         NodeReadable.from('<!-- 1 -->'),
-        NodeReadable.from(fragmentResponseBody).pipe(processFragmentForReframing()),
+        NodeReadable.from(processedBody),
+        //NodeReadable.fromWeb(processFragmentForReframing(fragmentResponse).body as any),
+        //NodeReadable.from(fragmentResponseBody).pipe(()),
         NodeReadable.from('<!-- 2 -->'),
         NodeReadable.from(fragmentHostSuffix),
       ).pipe(bodyStreamW);
@@ -215,22 +219,21 @@ export function getMiddleware(
 }
 
   // process the fragment response for embedding into the host document
-  function processFragmentForReframing(): NodeDuplex {
+  function processFragmentForReframing(fragmentResponse: Response) {
     console.log('[Debug Info | processFragmentForReframing]');
 
-    const tr = trumpet();
-
-    // inject the fragment's content into the host document head
-    //tr.selectAll('script', (element: TrumpetElement) => {
-    //   //element.setAttribute('type', 'inert');
-    //   //element.getAttribute('type', (scriptType: string) => {
-    //     //element.setAttribute('data-script-type', scriptType);
-    //   //});
-      
-    //});
-
-    // pipe the fragment's body content through trumpet
-    return tr;
+    return new HTMLRewriter()
+			.on("script", {
+				element(element: any) {
+          console.log('asdfasdf -----');
+					const scriptType = element.getAttribute("type");
+					if (scriptType) {
+						element.setAttribute("data-script-type", scriptType);
+					}
+					element.setAttribute("type", "inert");
+				},
+			})
+			.transform(fragmentResponse);
   }
 
   // render an error response if something goes wrong
@@ -254,13 +257,15 @@ function mergeStreams(...streams: NodeReadable[]) {
 
 function fragmentHostInitialization({
   fragmentId,
+  fragmentSrc,
   classNames,
 }: {
   fragmentId: string;
+  fragmentSrc: string;
   classNames: string;
 }) {
   return {
-  prefix: `<fragment-host class="${classNames}" fragment-id="${fragmentId}" data-piercing="true"><template shadowrootmode="open">`,
+  prefix: `<fragment-host class="${classNames}" fragment-id="${fragmentId}" src="${fragmentSrc}" data-piercing="true"><template shadowrootmode="open">`,
   suffix: `</template></fragment-host>`
   }
 };
