@@ -25,6 +25,14 @@ type ExpressMiddleware = (
   next: NextFunction,
 ) => void;
 
+
+/**
+ * Creates an instance of ExpressMiddleware to be used in an Express server powering a Fragment Gateway
+ * 
+ * @param gateway instance of a FragmentGateway
+ * @param options FragmentMiddlewareOptions
+ * @returns 
+ */
 export function getMiddleware(
   gateway: FragmentGateway,
   options: FragmentMiddlewareOptions = {},
@@ -59,19 +67,20 @@ export function getMiddleware(
 
       // fetch the fragment only after ensuring route is processed
       const fragmentResponse = await fetchFragment(expressRequest, matchedFragment);
-      
+
       // process fragment embedding only if it's a document request
       if (expressRequest.headers['sec-fetch-dest'] === 'document') {
         console.log('[Debug Info | Document request]');
         try {
-          //next();
           if (!fragmentResponse.ok) throw new Error(`Fragment response not ok: ${fragmentResponse.status}`);
 
-          //const fragmentResponseBody = await fragmentResponse.text();
-          
           expressResponse.setHeader('content-type', 'text/html');
+
+          // TODO: we should really be calling (next) here to allow all express middleware's to execute
+          //       instead of reading the file directly from the system. But next() is sync and doesn't
+          //       allow for easy composition of responses so we're doing this for now.
           fs.createReadStream(path.resolve(__dirname, '../angular-shell-app/browser/index.html'))
-            .pipe(embedFragmentSSR(fragmentResponse, matchedFragment))
+            .pipe(embedFragmentSSR(fragmentResponse, matchedFragment, expressRequest.path))
             .pipe(expressResponse);
         } catch (err) {
           console.error('[Error] Error during fragment embedding:', err);
@@ -82,7 +91,7 @@ export function getMiddleware(
         if (fragmentResponse.body) {
           expressResponse.setHeader('content-type', fragmentResponse.headers.get('content-type') || "text/plain");
           const fragmentResponseReadable = NodeReadable.fromWeb(fragmentResponse.body as any);
-          
+
           // otherwise just pipe the response back to the client
           fragmentResponseReadable.pipe(expressResponse);
 
@@ -152,7 +161,13 @@ export function getMiddleware(
   }
 
 
-  function embedFragmentSSR(fragmentResponse: Response, fragmentConfig: FragmentConfig): Trumpet {
+  /**
+   * Embeds the fragment SSR stream into the final response.
+   * 
+   * This implementation uses Trumpet, which works for this use-case but is not reliable for other html rewriting needs
+   * so we should just switch to HTMLRewriter as started in embedFragmentSSR2.
+   */
+  function embedFragmentSSR(fragmentResponse: Response, fragmentConfig: FragmentConfig, fragmentSrc: string): Trumpet {
 
     const { fragmentId, prePiercingClassNames } = fragmentConfig;
 
@@ -169,12 +184,12 @@ export function getMiddleware(
         NodeReadable.from(gateway.prePiercingStyles)
       ).pipe(headStreamW);
     });
-    
-    
+
+
     // inject the fragment's SSR into the host document body
-    const {prefix: fragmentHostPrefix, suffix: fragmentHostSuffix} = fragmentHostInitialization({
+    const { prefix: fragmentHostPrefix, suffix: fragmentHostSuffix } = fragmentHostInitialization({
       fragmentId,
-      fragmentSrc: "/store/catalog",
+      fragmentSrc: fragmentSrc,
       classNames: prePiercingClassNames.join(" "),
     });
 
@@ -182,58 +197,73 @@ export function getMiddleware(
     tr.select('body', async (body: TrumpetElement) => {
       const bodyStreamR = body.createReadStream();
       const bodyStreamW = body.createWriteStream();
-      
-      
-      // bodyStreamR.pipe(bodyStreamW, {end: false});
-      // NodeReadable.from(fragmentHostPrefix).pipe(bodyStreamW, {end: false});
-      // NodeReadable.from('<!-- 12 -->').pipe(bodyStreamW, {end: false});
-      // //fragmentResponseNode.pipe(bodyStreamW, {end: true});
-      // NodeReadable.from(fragmentResponseBody).pipe(bodyStreamW, {end: true});
-      // NodeReadable.from('<!-- 22 -->').pipe(bodyStreamW, {end: false});
-      // NodeReadable.from(fragmentHostSuffix).pipe(bodyStreamW, {end: true});
+
       const processedBody = await processFragmentForReframing(fragmentResponse).text();
       mergeStreams(
         bodyStreamR,
         NodeReadable.from(fragmentHostPrefix),
-        NodeReadable.from('<!-- 1 -->'),
         NodeReadable.from(processedBody),
-        //NodeReadable.fromWeb(processFragmentForReframing(fragmentResponse).body as any),
-        //NodeReadable.from(fragmentResponseBody).pipe(()),
-        NodeReadable.from('<!-- 2 -->'),
         NodeReadable.from(fragmentHostSuffix),
       ).pipe(bodyStreamW);
     });
 
-    // console.log(fragmentResponse.status, fragmentResponse.headers, fragmentResponse.body)
-    // mergeStreams(
-    //   bodyStream,
-    //   NodeReadable.from(fragmentHostPrefix),
-    //   NodeReadable.fromWeb(fragmentResponse.body as any),
-    //   NodeReadable.from(fragmentHostSuffix),
-    //     //.pipe(processFragmentForReframing()),
-      
-    // ).pipe(bodyStream)
-
     // pipe the fragment's body content through trumpet
     return tr;
-}
+  }
+
+  // TODO: clean this up and get rid of embedFragmentSSR and dependency on Trumpet which seems too unreliable
+  function embedFragmentSSR2(
+    fragmentResponse: Response,
+    fragmentConfig: FragmentConfig,
+    fragmentSrc: string
+  ) {
+    const { fragmentId, prePiercingClassNames } = fragmentConfig;
+
+    const { prefix: fragmentHostPrefix, suffix: fragmentHostSuffix } = fragmentHostInitialization({
+      fragmentId,
+      fragmentSrc: fragmentSrc,
+      classNames: prePiercingClassNames.join(" "),
+    })
+
+    const transform = new NodePassThrough();
+
+    const rewrittenResponseBody = new HTMLRewriter()
+      .on("head", {
+        element(element) {
+          element.append(gateway.prePiercingStyles, { html: true });
+        },
+      })
+      .on("body", {
+        async element(element) {
+          element.append(fragmentHostPrefix, { html: true });
+          // TODO: this should be a stream append rather than buffer to text & append
+          //       update once HTMLRewriter is updated
+          element.append(await fragmentResponse.text(), { html: true });
+          element.append(fragmentHostSuffix, { html: true });
+        },
+      })
+      .transform(new Response(NodeReadable.toWeb(transform) as any)).body;
+
+    NodeReadable.fromWeb(rewrittenResponseBody as any).pipe(transform);
+
+    return transform;
+  }
 
   // process the fragment response for embedding into the host document
   function processFragmentForReframing(fragmentResponse: Response) {
     console.log('[Debug Info | processFragmentForReframing]');
 
     return new HTMLRewriter()
-			.on("script", {
-				element(element: any) {
-          console.log('asdfasdf -----');
-					const scriptType = element.getAttribute("type");
-					if (scriptType) {
-						element.setAttribute("data-script-type", scriptType);
-					}
-					element.setAttribute("type", "inert");
-				},
-			})
-			.transform(fragmentResponse);
+      .on("script", {
+        element(element: any) {
+          const scriptType = element.getAttribute("type");
+          if (scriptType) {
+            element.setAttribute("data-script-type", scriptType);
+          }
+          element.setAttribute("type", "inert");
+        },
+      })
+      .transform(fragmentResponse);
   }
 
   // render an error response if something goes wrong
@@ -249,8 +279,8 @@ export function getMiddleware(
 function mergeStreams(...streams: NodeReadable[]) {
   let combined = new NodePassThrough()
   for (let stream of streams) {
-      const end = stream === streams.at(-1);
-      combined = stream.pipe(combined, { end })
+    const end = stream === streams.at(-1);
+    combined = stream.pipe(combined, { end })
   }
   return combined;
 }
@@ -265,7 +295,7 @@ function fragmentHostInitialization({
   classNames: string;
 }) {
   return {
-  prefix: `<fragment-host class="${classNames}" fragment-id="${fragmentId}" src="${fragmentSrc}" data-piercing="true"><template shadowrootmode="open">`,
-  suffix: `</template></fragment-host>`
+    prefix: `<fragment-host class="${classNames}" fragment-id="${fragmentId}" src="${fragmentSrc}" data-piercing="true"><template shadowrootmode="open">`,
+    suffix: `</template></fragment-host>`
   }
 };
