@@ -13,7 +13,7 @@ const gateway = new FragmentGateway({
         &.analog {
             width: 390px;
             position: relative;
-            top: 67px;
+            top: 40px;
             left: -173px;
         }
       }

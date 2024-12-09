@@ -39,13 +39,14 @@ body {
 }
 
 h1 {
-  font-size: 5vw; /* Make h1 font size responsive */
+  font-size: 4vw; /* Make h1 font size responsive */
   background: linear-gradient(90deg, fuchsia, turquoise);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
   margin-bottom: 50px;
   text-align: center;
+  line-height: 1.1;
 }
 
 h2 {
