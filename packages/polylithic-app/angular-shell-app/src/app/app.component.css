@@ -1,8 +1,9 @@
 .subnav {
   display: flex;
   justify-content: flex-end;
-  top: -40px;
-  position: relative;
-  width: 80%;
-  right: -20%;
+  top: 10px;
+  position: fixed;
+  width: 200px;
+  right: 30px;
+  z-index: 2;
 }

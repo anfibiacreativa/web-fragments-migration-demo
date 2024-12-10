@@ -160,7 +160,7 @@ export const ShoppingCart = component$(() => {
   return (
     <>
       <div class="cart">
-        <h2>Shopping Cart</h2>
+        <h3 class="subtitle">Your Shopping Cart</h3>
 
         {cart.message ? (
            <>

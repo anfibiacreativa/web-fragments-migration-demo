@@ -7,14 +7,25 @@ import { FragmentGateway } from 'web-fragments/gateway';
 // start the gateway
 const gateway = new FragmentGateway({
   prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
-      fragment-host[data-piercing="true"] { 
+      fragment-host[data-piercing="true"] {
         z-index: 1;
 
         &.analog {
-            width: 390px;
-            position: relative;
-            top: 40px;
-            left: -173px;
+          width: calc(100% - 40px);
+          position: relative;
+          top: 50px;
+          left: 0;
+          z-index: 0;
+
+          @media (min-width: 900px) and (max-width: 1023px) {
+            width: 432px;
+            left: -209px;
+          }
+
+          @media (min-width: 1024px) {
+            width: 535px;
+            left: -180px;
+          }
         }
       }
     </style>`,

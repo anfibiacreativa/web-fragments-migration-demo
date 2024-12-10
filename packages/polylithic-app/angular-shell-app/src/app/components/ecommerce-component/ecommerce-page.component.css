@@ -1,18 +1,37 @@
 /* Shop wrapper grid */
 .shop-wrapper {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 16px;
-  padding: 16px;
 }
 
-@media (min-width: 512px) {
+@media (min-width: 1024px) {
   .shop-wrapper {
-    grid-template-columns: 400px 400px;
+    grid-template-columns: minmax(0, 535px) 1fr;
+    display: flex;
+  }
+
+  fragment-outlet:first-of-type {
+    width: 535px;
+  }
+
+  fragment-outlet:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 380px;
   }
 }
 
-@media (max-width: 511px) {
+@media (min-width: 900px) and (max-width: 1023px) {
   .shop-wrapper {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 435px) 1fr;
+    display: flex;
+  }
+
+  fragment-outlet:last-of-type {
+    display: flex;
+    justify-content: flex-end;
+    max-width: 360px;
   }
 }
+

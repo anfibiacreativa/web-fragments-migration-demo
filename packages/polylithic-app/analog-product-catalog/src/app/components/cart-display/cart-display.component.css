@@ -1,6 +1,7 @@
 .cart-display {
   border: 1px solid #9bd5ff;
   padding: 5px 10px;
+  border-radius: 25px;
 }
 
 .btn.zoom {

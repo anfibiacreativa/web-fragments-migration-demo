@@ -39,18 +39,18 @@ body {
 }
 
 h1 {
-  font-size: 4vw; /* Make h1 font size responsive */
+  font-size: 3vw; /* Make h1 font size responsive */
   background: linear-gradient(90deg, fuchsia, turquoise);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: bold;
-  margin-bottom: 50px;
+  margin: 50px 0 20px 0;
   text-align: center;
   line-height: 1.1;
 }
 
 h2 {
-  font-size: 3vw; /* Make h2 font size responsive */
+  font-size: 2vw; /* Make h2 font size responsive */
   background: linear-gradient(90deg, fuchsia, turquoise);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -60,7 +60,7 @@ h2 {
 }
 
 h3 {
-  font-size: 2.5vw; /* Make h3 font size responsive */
+  font-size: 1.5vw; /* Make h3 font size responsive */
   background: linear-gradient(90deg, fuchsia, turquoise);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -72,10 +72,10 @@ h3 {
 /* Main content */
 
 .mainWrapper {
-  max-width: 90vh;
+  max-width: 900px;
   position: relative;
-  z-index: 1;
   top: 50px;
+  padding: 0 20px;
 }
 
 .main {
@@ -112,31 +112,6 @@ h3 {
   margin-top: 5px;
 }
 
-/* Shop wrapper grid */
-.shop-wrapper {
-  display: grid;
-  gap: 16px;
-  padding: 16px;
-}
-
-@media (min-width: 1024px) {
-  .shop-wrapper {
-    grid-template-columns: 3fr 1fr;
-  }
-}
-
-@media (min-width: 512px) and (max-width: 1023px) {
-  .shop-wrapper {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-@media (max-width: 511px) {
-  .shop-wrapper {
-    grid-template-columns: 1fr;
-  }
-}
-
 /* Footer */
 .footer {
   background-color: #001736; /* Dark grayish blue */
@@ -161,18 +136,22 @@ a:hover {
 
 /* Menu container */
 
-@media (max-width: 512px) {
+@media (max-width: 1024px) {
   h1 {
-    font-size: 8vw; /* Adjust font size for very small screens */
+    font-size: 6vw; /* Adjust font size for very small screens */
   }
 
   h2 {
-    font-size: 6vw; /* Adjust h2 font size for smaller screens */
+    font-size: 4vw; /* Adjust h2 font size for smaller screens */
   }
 
   h3 {
-    font-size: 5vw; /* Adjust h3 font size for smaller screens */
+    font-size: 3vw; /* Adjust h3 font size for smaller screens */
   }
+}
+
+.hero {
+  height: 150px;
 }
 
 /* Header icon links */
@@ -190,13 +169,13 @@ a:hover {
 }
 
 fragment-outlet {
-  border: 5px dotted transparent;
+  outline: 3px dotted transparent;
   border-radius: 20px;
 }
 
 /* add borders */
 body.fragment-border fragment-outlet {
-  border-color: rgb(65, 155, 234);
+  outline-color: rgb(65, 155, 234);
 }
 
 .toggle-pill {

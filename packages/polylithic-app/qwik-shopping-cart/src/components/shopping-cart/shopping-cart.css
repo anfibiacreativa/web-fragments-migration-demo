@@ -68,3 +68,7 @@
 .btn-primary:hover {
   background-color: #34495e;
 }
+
+.subtitle {
+  font-size: 16px;
+}

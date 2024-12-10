@@ -8,7 +8,7 @@
   margin-top: 50px; /* Add space for the header */
   flex-wrap: wrap; /* Allow bubbles to wrap onto the next line in smaller viewports */
   width: 80%;
-  margin: 0 auto;
+  margin: 70px auto;
 }
 
 /* Menu items */
