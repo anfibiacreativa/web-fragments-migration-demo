@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CartService } from '../../shared/services/cart.service';
-import { PaymentService } from '../../shared/services/payment.service';
 import { signal } from '@angular/core';
 
 @Component({
@@ -16,7 +15,6 @@ export class CartDisplayComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -24,12 +22,13 @@ export class CartDisplayComponent implements OnInit {
   }
 
   updateCartInfo() {
+    this.triggerZoomAnimation();
     this.itemCount.set(this.cartService.getTotalItems());
     this.totalAmount.set(this.cartService.getTotalAmount());
   }
 
   triggerZoomAnimation() {
     this.zoomAnimation.set(true);
-    setTimeout(() => this.zoomAnimation.set(false), 1000);  // Reset animation after 1 second
+    setTimeout(() => this.zoomAnimation.set(false), 1000);
   }
 }

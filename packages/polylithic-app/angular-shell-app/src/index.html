@@ -10,15 +10,25 @@
 </head>
 <body>
   <header class="header">
-    <a href="https://github.com/web-fragments/web-fragments" class="icon-link">
-      <i class="fab fa-github"></i>
-    </a>
-    <a href="/" class="icon-link">
-      <i class="fas fa-home"></i>
-    </a>
+    <div class="headerWrapper">
+     <ul class="topNav">
+      <li>
+        <a href="/" class="icon-link">
+          <i class="fas fa-home"></i>
+        </a>
+      </li>
+      <li class="topNavListItem">
+        <a href="https://github.com/web-fragments/web-fragments" class="icon-link">
+          <i class="fab fa-github"></i>
+        </a>
+      </li class="topNavListItem">
+     </ul>
+    </div>
   </header>
   <main class="main">
-    <app-root></app-root>
+    <div class="mainWrapper">
+      <app-root></app-root>
+    </div>
   </main>
   <footer class="footer">
     <p><a href="">@2024 | Web Fragments Enterprise Demo</a></p>

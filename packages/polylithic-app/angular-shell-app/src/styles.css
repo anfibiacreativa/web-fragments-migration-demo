@@ -70,25 +70,46 @@ h3 {
 }
 
 /* Main content */
-.main {
+
+.mainWrapper {
   max-width: 90vh;
-  margin: 60px auto;
-  flex: 1; /* Allow main content to expand and take available space */
-  margin-top: 70px; /* Prevent content from being hidden behind the fixed header */
-  padding: 0 20px 200px 20px; /* Make space for the footer */
+  position: relative;
+  z-index: 1;
+  top: 50px;
+}
+
+.main {
+  width: 100%;
+  display: flex;
+  flex: 1;
+  padding: 0 20px 200px 20px;
+  justify-content: center;
 }
 
 /* Header */
 .header {
+  width: 100%;
   background-color: #000d1d;
   height: 50px;
   display: flex;
-  align-items: center;
-  padding: 0 16px;
+  justify-content: center;
+  z-index: 1;
   position: fixed;
   top: 0;
+}
+.headerWrapper {
+  max-width: 90vh;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  top: 0;
   width: 100%;
-  z-index: 1000;
+}
+
+.topNav {
+  list-style-type: none;
+  display: flex;
+  margin-top: 5px;
 }
 
 /* Shop wrapper grid */
@@ -139,77 +160,6 @@ a:hover {
 }
 
 /* Menu container */
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  gap: 16px; /* Space between the bubbles */
-  justify-content: center;
-  margin-top: 50px; /* Add space for the header */
-  flex-wrap: wrap; /* Allow bubbles to wrap onto the next line in smaller viewports */
-  width: 80%;
-  margin: 0 auto;
-}
-
-/* Menu items */
-li {
-  border: 2px solid fuchsia; /* Border color */
-  border-radius: 50px; /* Rounded corners for the bubble look */
-  padding: 10px 20px; /* Padding inside each bubble */
-  font-size: 1rem;
-  text-align: center;
-  transition: all 0.3s ease; /* Smooth transition effect */
-  cursor: pointer;
-  white-space: nowrap; /* Prevent text from wrapping */
-}
-
-/* Links inside the bubbles */
-li a {
-  text-decoration: none;
-    color: fuchsia;
-    display: inline-block;
-    transition: color 0.3s ease;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    padding: 10px 0 10px 0;
-    position: relative;
-    top: -10px;
-    align-items: center;
-}
-
-li:hover {
-  background-color: fuchsia; /* Fill the bubble on hover */
-  transform: scale(1.1); /* Slightly enlarge the bubble on hover */
-  border-radius: 50px;
-}
-
-li:hover a {
-  color: white; /* Change the link text color to white on hover */
-  text-decoration: none;
-}
-
-li:active {
-  transform: scale(1); /* Reset scale on click for a subtle effect */
-  background-color: turquoise; /* Optional: a different color for active state */
-}
-
-li:active a {
-  color: white; /* Ensure the text remains white in the active state */
-}
-
-/* Responsive styles for smaller viewports */
-@media (max-width: 768px) {
-  ul {
-    flex-direction: column; /* Stack menu items vertically */
-  }
-
-  li {
-    /* Ensure the bubbles take full width when stacked */
-    text-align: center;
-  }
-}
 
 @media (max-width: 512px) {
   h1 {
@@ -237,18 +187,6 @@ li:active a {
 /* Hover effect */
 .header a.icon-link:hover {
   color: fuchsia; /* Change to fuchsia on hover */
-}
-
-/* Optional: Add a little space between icons in the header */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 16px;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
 }
 
 fragment-outlet {
@@ -294,9 +232,9 @@ body.fragment-border fragment-outlet {
 
 .tiny-text {
   font-size: small;
-  color: gray;
+  color: rgb(255, 255, 255);
   line-height: 1.5;
-  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .toggle-wrapper {

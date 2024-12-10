@@ -1,12 +1,6 @@
 <!-- <app-fragment [fragmentId]="'qwik'"></app-fragment> -->
 <!-- <app-fragment [fragmentId]="'analog'"></app-fragment> -->
 
-<div class="toggle-wrapper">
-  <div class="toggle-pill" [class.active]="fragmentSeam" (click)="toggleFragmentBorder()">
-    <div class="toggle-knob"></div>
-  </div>
-  <p class="tiny-text">Show fragments seams</p>
-</div>
 <div class="shop-wrapper">
   <fragment-outlet fragment-id="analog"></fragment-outlet>
   <fragment-outlet fragment-id="qwik" src="/cart"></fragment-outlet>

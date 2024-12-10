@@ -1,0 +1,71 @@
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 16px; /* Space between the bubbles */
+  justify-content: center;
+  margin-top: 50px; /* Add space for the header */
+  flex-wrap: wrap; /* Allow bubbles to wrap onto the next line in smaller viewports */
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* Menu items */
+.listItem {
+  border: 2px solid fuchsia; /* Border color */
+  border-radius: 50px; /* Rounded corners for the bubble look */
+  padding: 10px 20px; /* Padding inside each bubble */
+  font-size: 1rem;
+  text-align: center;
+  transition: all 0.3s ease; /* Smooth transition effect */
+  cursor: pointer;
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+/* Links inside the bubbles */
+.listItem a {
+  text-decoration: none;
+    color: fuchsia;
+    display: inline-block;
+    transition: color 0.3s ease;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    padding: 10px 0 10px 0;
+    position: relative;
+    top: -10px;
+    align-items: center;
+}
+
+.listItem:hover {
+  background-color: fuchsia; /* Fill the bubble on hover */
+  transform: scale(1.1); /* Slightly enlarge the bubble on hover */
+  border-radius: 50px;
+}
+
+.listItem:hover a {
+  color: white; /* Change the link text color to white on hover */
+  text-decoration: none;
+}
+
+.listItem:active {
+  transform: scale(1); /* Reset scale on click for a subtle effect */
+  background-color: turquoise; /* Optional: a different color for active state */
+}
+
+.listItem:active a {
+  color: white; /* Ensure the text remains white in the active state */
+}
+
+/* Responsive styles for smaller viewports */
+@media (max-width: 768px) {
+  .list {
+    flex-direction: column; /* Stack menu items vertically */
+  }
+
+  .listItem {
+    /* Ensure the bubbles take full width when stacked */
+    text-align: center;
+  }
+}
