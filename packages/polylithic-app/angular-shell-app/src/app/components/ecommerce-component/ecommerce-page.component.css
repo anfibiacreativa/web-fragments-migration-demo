@@ -24,7 +24,7 @@
 
 @media (min-width: 900px) and (max-width: 1023px) {
   .shop-wrapper {
-    grid-template-columns: minmax(0, 435px) 1fr;
+    grid-template-columns: minmax(0, 497px) 1fr;
     display: flex;
   }
 

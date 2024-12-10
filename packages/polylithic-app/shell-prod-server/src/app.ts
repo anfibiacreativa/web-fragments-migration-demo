@@ -18,13 +18,13 @@ const gateway = new FragmentGateway({
           z-index: 0;
 
           @media (min-width: 900px) and (max-width: 1023px) {
-            width: 432px;
-            left: -209px;
+            width: 497px;
+            left: -185px;
           }
 
           @media (min-width: 1024px) {
             width: 535px;
-            left: -180px;
+            left: -182px;
           }
         }
       }
