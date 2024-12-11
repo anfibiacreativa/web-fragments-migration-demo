@@ -23,7 +23,8 @@
   background: url('../../../assets/images/webfragmentssplash.png') center/cover no-repeat;
 }
 
-.banner h1, .banner p {
+.banner .banner-title,
+.banner p {
   margin: 0;
   z-index: 1;
   position: relative;

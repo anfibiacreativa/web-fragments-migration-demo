@@ -1,3 +1,31 @@
+/* Reset styles */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+
 /* Global styles */
 :root {
     --primary-color: #2c3e50;
@@ -5,27 +33,166 @@
     --background-color: #f8f9fa;
     --text-color: #2c3e50;
   }
-  
+
+  .title,
+  h1 {
+    font-size: 3vw; /* Make h1 font size responsive */
+    background: linear-gradient(90deg, fuchsia, turquoise);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    margin: 50px 0 20px 0;
+    text-align: center;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 2vw; /* Make h2 font size responsive */
+    background: linear-gradient(90deg, fuchsia, turquoise);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    margin-bottom: 30px;
+  }
+
+  h3 {
+    font-size: 1.5vw; /* Make h3 font size responsive */
+    background: linear-gradient(90deg, fuchsia, turquoise);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+
+  /* Main content */
+
+  .mainWrapper {
+    position: relative;
+    top: 50px;
+    padding: 0 20px;
+  }
+
+  .main {
+    width: 100%;
+    padding-bottom: 200px;
+  }
+
+  /* Header */
+  .header {
+    width: 100%;
+    background-color: #000d1d;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    z-index: 1;
+    position: fixed;
+    top: 0;
+  }
+  .headerWrapper {
+    max-width: 90vh;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    top: 0;
+    width: 100%;
+  }
+
+  .topNav {
+    list-style-type: none;
+    display: flex;
+    margin-top: 5px;
+  }
+
+  /* Footer */
+  .footer {
+    background-color: #001736; /* Dark grayish blue */
+    color: white;
+    text-align: center;
+    padding: 16px;
+    height: 200px;
+    width: 100%;
+    margin-top: auto; /* Always push footer to the bottom */
+  }
+
+  /* Links */
+  a {
+    color: fuchsia;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: rgb(0, 89, 185);
+    text-decoration: underline;
+  }
+
+  /* Menu container */
+
+  @media (max-width: 1024px) {
+    h1 {
+      font-size: 6vw; /* Adjust font size for very small screens */
+    }
+
+    h2 {
+      font-size: 4vw; /* Adjust h2 font size for smaller screens */
+    }
+
+    h3 {
+      font-size: 3vw; /* Adjust h3 font size for smaller screens */
+    }
+  }
+
+  .hero {
+    height: 150px;
+  }
+
+  /* Header icon links */
+  .header a.icon-link {
+    margin-right: 16px; /* Space between the icons */
+    color: white; /* Default color for the icons */
+    font-size: 24px; /* Icon size */
+    transition: color 0.3s ease; /* Smooth transition for color change */
+    text-decoration: none; /* Remove underline from links */
+  }
+
+  /* Hover effect */
+  .header a.icon-link:hover {
+    color: fuchsia; /* Change to fuchsia on hover */
+  }
+
+  fragment-outlet {
+    outline: 3px dotted transparent;
+    border-radius: 20px;
+  }
+
+  /* add borders */
+  body.fragment-border fragment-outlet {
+    outline-color: rgb(65, 155, 234);
+  }
+
   body {
     margin: 0;
-    font-family: system-ui, -apple-system, sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
   }
-  
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
   }
-  
+
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 2rem;
     padding: 2rem 0;
   }
-  
+
   .btn {
     padding: 0.5rem 1rem;
     border: none;
@@ -34,16 +201,16 @@
     font-weight: 600;
     transition: background-color 0.2s;
   }
-  
+
   .btn-primary {
     background-color: var(--primary-color);
     color: white;
   }
-  
+
   .btn-primary:hover {
     background-color: #34495e;
   }
-  
+
   .card {
     background: white;
     border-radius: 8px;
@@ -51,7 +218,7 @@
     padding: 1rem;
     transition: transform 0.2s;
   }
-  
+
   .card:hover {
     transform: translateY(-4px);
   }
