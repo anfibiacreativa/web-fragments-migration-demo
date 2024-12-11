@@ -1,6 +1,6 @@
 <div class="product-detail">
     <div class="product-image">
-      <img [src]="product.imageUrl" [alt]="product.name">
+      <img [src]="product.imageUrl + product.id + extension" [alt]="product.name">
     </div>
     <div class="product-info">
       <h1>{{ product.name }}</h1>
