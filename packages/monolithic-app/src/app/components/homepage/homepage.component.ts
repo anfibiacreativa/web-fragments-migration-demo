@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { ShoppingCartComponent } from '../shopping-cart/shopping-cart.component';
 import { ProductService } from '../../shared/services/product.service';
+import { CountdownBannerComponent } from "../countdown-banner/countdown-banner.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, ProductCardComponent, ShoppingCartComponent],
+  imports: [CommonModule, RouterLink, ProductCardComponent, ShoppingCartComponent, CountdownBannerComponent],
   templateUrl: './homepage.component.html',
   styleUrls: ['./homepage.component.css']
 })
