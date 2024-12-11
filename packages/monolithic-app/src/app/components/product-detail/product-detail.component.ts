@@ -13,6 +13,7 @@ import { ShoppingCartService } from '../../shared/services/shopping-cart.service
 })
 export class ProductDetailComponent {
   @Input() product!: Product;
+  extension = '.png';
 
   constructor(private cartService: ShoppingCartService) {}
 
