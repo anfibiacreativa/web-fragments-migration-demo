@@ -1,8 +1,23 @@
 <div class="cart">
-    <h3>Your shopping Cart</h3>
-    @if (items().length === 0) {
+  <h3>Your Shopping Cart</h3>
+
+  <!-- Show progress bar and message -->
+  <div *ngIf="message" class="status-message">
+    <p>{{ message }}</p>
+    <div class="progress-bar">
+      <div
+        class="progress"
+        [style.width.%]="progress"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Show empty cart message or items only when no message -->
+  <ng-container *ngIf="!message">
+    <div *ngIf="items().length === 0">
       <p>Your cart is empty</p>
-    } @else {
+    </div>
+    <div *ngIf="items().length > 0">
       <ul class="cart-items">
         @for (item of items(); track item.product.id) {
           <li class="cart-item">
@@ -12,12 +27,12 @@
               <p>${{ item.product.price.toFixed(2) }}</p>
             </div>
             <div class="cart-items-footer">
-                <div class="quantity-controls">
-                    <button class="btn" (click)="updateQuantity(item.product.id, -1)">-</button>
-                    <span>{{ item.quantity }}</span>
-                    <button class="btn" (click)="updateQuantity(item.product.id, 1)">+</button>
-                </div>
-                <button class="btn remove-btn" (click)="removeItem(item.product.id)">×</button>
+              <div class="quantity-controls">
+                <button class="btn" (click)="updateQuantity(item.product.id, -1)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button class="btn" (click)="updateQuantity(item.product.id, 1)">+</button>
+              </div>
+              <button class="btn remove-btn" (click)="removeItem(item.product.id)">×</button>
             </div>
           </li>
         }
@@ -25,7 +40,8 @@
       <div class="cart-summary">
         <p class="total">Total: ${{ total().toFixed(2) }}</p>
         <button class="btn btn-primary" (click)="checkout()">Proceed to Checkout</button>
-        <div *ngIf="isError" class="errorMessage"><span>${{messageError}}</span></div>
+        <div *ngIf="isError" class="errorMessage"><span>{{ messageError }}</span></div>
       </div>
-    }
-  </div>
+    </div>
+  </ng-container>
+</div>

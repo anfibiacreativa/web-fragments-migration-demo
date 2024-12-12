@@ -50,3 +50,21 @@
     color: white;
     font-size: small;
   }
+  .status-message {
+    margin-top: 20px;
+    text-align: center;
+  }
+  .progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+    height: 10px;
+  }
+  .progress {
+    height: 100%;
+    background-color: #4caf50;
+    width: 0;
+    transition: width 1s linear;
+  }

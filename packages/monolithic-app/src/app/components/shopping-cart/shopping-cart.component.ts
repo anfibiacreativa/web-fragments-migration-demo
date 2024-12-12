@@ -20,6 +20,8 @@ export class ShoppingCartComponent {
   total = this.cartService.total;
   isError = false;
   messageError = '';
+  progress = 0;
+  message = '';
 
   updateQuantity(productId: number, change: number) {
     this.cartService.updateQuantity(productId, change);
@@ -36,7 +38,6 @@ export class ShoppingCartComponent {
 
   async checkout() {
     const totalAmount = this.total();
-    // mocks just for the demo
     const currency = 'EUR';
     const userId = 'user_123';
 
@@ -45,8 +46,33 @@ export class ShoppingCartComponent {
     try {
       const response = await this.paymentService.createPaymentIntent(totalAmount, currency, userId);
       console.log('Payment successful:', response);
-      alert('Payment successful! Clearing the cart.');
-      this.cartService.clearCart(); 
+
+      this.cartService.clearCart();
+
+      this.message = 'Payment completed. Processing the order. You will get your swag soon!';
+      this.progress = 0;
+
+      let progressComplete = false;
+
+      const interval = setInterval(() => {
+        this.progress += 5;
+        if (this.progress >= 100) {
+          clearInterval(interval);
+          progressComplete = true;
+          this.message = '';
+        }
+      }, 1000);
+
+      const waitForProgress = new Promise<void>((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (progressComplete) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 100);
+      });
+
+      await waitForProgress;
     } catch (error) {
       if (error instanceof Error) {
         this.showErrorNotification(error.message);
