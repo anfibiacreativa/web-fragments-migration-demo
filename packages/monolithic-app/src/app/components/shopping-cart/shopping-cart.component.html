@@ -6,7 +6,7 @@
       <ul class="cart-items">
         @for (item of items(); track item.product.id) {
           <li class="cart-item">
-            <img [src]="item.product.imageUrl" [alt]="item.product.name">
+            <img [src]="item.product.imageUrl + item.product.id + '.png'" [alt]="item.product.name">
             <div class="item-details">
               <h3>{{ item.product.name }}</h3>
               <p>${{ item.product.price.toFixed(2) }}</p>
