@@ -1,10 +1,11 @@
 import { Component, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { CountdownBannerComponent } from "./components/countdown-banner/countdown-banner.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CountdownBannerComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
