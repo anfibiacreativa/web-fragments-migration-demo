@@ -14,7 +14,7 @@
   height: 100%; /* Full height */
   background-color: #fff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 10;
   transform: translateX(100%); /* Hidden state */
 }
 .cart-sidebar.open {
@@ -45,10 +45,11 @@ a {
   }
   .cart-sidebar {
     position: static;
-    transform: none; /* No sliding behavior */
-    width: auto; /* Default column width */
-    height: auto; /* Default height */
-    box-shadow: none; /* No shadow needed for static layout */
+    transform: none;
+    width: auto;
+    height: auto;
+    z-index: 3;
+    box-shadow: none;
   }
   .backdrop {
     display: none;
@@ -66,7 +67,7 @@ a {
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease-in-out;
-  z-index: 999;
+  z-index: 9;
 }
 
 .backdrop.visible {
