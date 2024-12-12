@@ -17,7 +17,9 @@ export class ProductCardComponent {
 
   constructor(private cartService: CartService ) {}
 
-  addToCart(): void {
+  addToCart(event: Event): void {
+    event?.preventDefault()
+    event?.stopPropagation();
     this.cartService.addToCart(this.product);
   }
 }

@@ -29,45 +29,48 @@ export const ShoppingCart = component$(() => {
 
   // proceed to checkout
   const checkout = $(async () => {
-    const userId = 'fake_user_id';
-    const currency = 'EUR';
-    const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const userId = 'fake_user_id';
+  const currency = 'EUR';
+  const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const payment_endpoint = 'http://localhost:3000/create-payment';
 
-    try {
-      const response = await fetch('http://localhost:3000/create-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          amount: totalAmount,
-          currency,
-          userId,
-        }),
-      });
+  try {
+    const response = await fetch(payment_endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        amount: totalAmount,
+        currency,
+        userId,
+      }),
+    });
 
-      if (!response.ok) {
-        throw new Error(`Failed to create payment: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('Payment intent created:', data);
-
-
-      cart.message = 'Payment complete. You will get your order soon!';
-      let currentProgress = 0;
-      const interval = setInterval(() => {
-        currentProgress += 5;
-        progress.value = currentProgress;
-
-        if (currentProgress >= 100) {
-          clearInterval(interval);
-          clearCart();
-        }
-      }, 1000);
-    } catch (error) {
-      console.error('Checkout error:', error);
+    if (!response.ok) {
+      throw new Error(`Failed to create payment: ${response.statusText}`);
     }
+
+    const data = await response.json();
+    console.log('Payment intent created:', data);
+
+    cart.message = 'Payment complete. You will get your order soon!';
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 5;
+      progress.value = currentProgress;
+
+      if (currentProgress >= 100) {
+        clearInterval(interval);
+        clearCart();
+        setTimeout(() => {
+          cart.message = '';
+        }, 2000);
+      }
+    }, 1000);
+  } catch (error) {
+    console.error('Checkout error:', error);
+  }
   });
 
   // remove all instances of a product
@@ -178,7 +181,7 @@ export const ShoppingCart = component$(() => {
                 <li key={item.product.id} class="cart-item">
                   <img src={item.product.imageUrl} alt={item.product.name} width="80" height="80" />
                   <div class="item-details">
-                    <h3>{item.product.name}</h3>
+                    <h3 class="subtitle">{item.product.name}</h3>
                     <p>${item.product.price.toFixed(2)}</p>
                   </div>
                   <div class="cart-items-footer">
@@ -194,11 +197,11 @@ export const ShoppingCart = component$(() => {
                         }
                       />
                       <button class="btn" onClick$={() => addItem(item.product)}>+</button>
+                      <button class="btn remove-btn" onClick$={() => removeItems(item.product.id)}>
+                        x
+                      </button>
                     </div>
                   </div>
-                  <button class="btn remove-btn" onClick$={() => removeItems(item.product.id)}>
-                    x
-                  </button>
                 </li>
               ))}
             </ul>

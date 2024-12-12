@@ -28,6 +28,9 @@
   align-items: center;
   gap: 0.5rem;
 }
+.quantity-input {
+  max-width: 40px;
+}
 .remove-btn {
   background: none;
   border: none;
@@ -70,5 +73,16 @@
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 1.5vw; /* Make h3 font size responsive */
+  background: linear-gradient(90deg, fuchsia, turquoise);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1024px) {
+  .subtitle {
+    font-size: 3vw; /* Adjust h3 font size for smaller screens */
+  }
 }
