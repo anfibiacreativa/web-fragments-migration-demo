@@ -1,7 +1,17 @@
 <!-- <app-fragment [fragmentId]="'qwik'"></app-fragment> -->
 <!-- <app-fragment [fragmentId]="'analog'"></app-fragment> -->
-
+<div class="backdrop" [class.visible]="isCartOpen" (click)="toggleCart()"></div>
+<button class="btn-toggle-cart" (click)="toggleCart()">
+  <i class="fa-solid fa-cart-shopping"></i>
+</button>
 <div class="shop-wrapper">
-  <fragment-outlet fragment-id="analog"></fragment-outlet>
-  <fragment-outlet fragment-id="qwik" src="/cart"></fragment-outlet>
+  <div class="product-catalogue">
+    <fragment-outlet fragment-id="analog"></fragment-outlet>
+  </div>
+  <div class="cart-sidebar" [class.open]="isCartOpen">
+    <button class="btn-toggle-cart close" (click)="toggleCart()">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </button>
+    <fragment-outlet fragment-id="qwik" src="/cart"></fragment-outlet>
+  </div>
 </div>

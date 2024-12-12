@@ -1,4 +1,4 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-ecommerce-page',
@@ -7,4 +7,19 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
   styleUrl: './ecommerce-page.component.css',
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class EcommercePageComponent {}
+export class EcommercePageComponent {
+  isCartOpen = false;
+
+  toggleCart(): void {
+    this.isCartOpen = !this.isCartOpen;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    const viewportWidth = window.innerWidth;
+
+    if (this.isCartOpen && viewportWidth >= 900) {
+      this.toggleCart();
+    }
+  }
+}
