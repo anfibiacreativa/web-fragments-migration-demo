@@ -17,8 +17,3 @@
     margin: 0.5rem 0;
 }
 
-@media screen and (min-width: 900px) {
-  .product-image {
-    height: 330px;
-  }
-}
