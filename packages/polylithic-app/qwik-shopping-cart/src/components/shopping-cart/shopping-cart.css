@@ -86,3 +86,18 @@
     font-size: 3vw; /* Adjust h3 font size for smaller screens */
   }
 }
+
+.progress-bar {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress {
+  height: 10px;
+  background-color: #4caf50;
+  width: 0;
+  transition: width 1s ease-in-out;
+}

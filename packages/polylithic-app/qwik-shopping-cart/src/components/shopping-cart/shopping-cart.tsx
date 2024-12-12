@@ -27,51 +27,61 @@ export const ShoppingCart = component$(() => {
 
   const progress = useSignal(0);
 
+  const clearCart = $(() => {
+    cart.items = [];
+    saveCartToLocalStorage();
+
+    const bc = new BroadcastChannel('/cart');
+    bc.postMessage({ type: 'cart_cleared' });
+    bc.close();
+  });
+
   // proceed to checkout
   const checkout = $(async () => {
-  const userId = 'fake_user_id';
-  const currency = 'EUR';
-  const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const payment_endpoint = 'http://localhost:3000/create-payment';
+    const userId = 'fake_user_id';
+    const currency = 'EUR';
+    const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+    const payment_endpoint = 'http://localhost:3000/create-payment';
 
-  try {
-    const response = await fetch(payment_endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        amount: totalAmount,
-        currency,
-        userId,
-      }),
-    });
+    try {
+      const response = await fetch(payment_endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: totalAmount,
+          currency,
+          userId,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Failed to create payment: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Payment intent created:', data);
-
-    cart.message = 'Payment complete. You will get your order soon!';
-    let currentProgress = 0;
-    const interval = setInterval(() => {
-      currentProgress += 5;
-      progress.value = currentProgress;
-
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-        clearCart();
-        setTimeout(() => {
-          cart.message = '';
-        }, 2000);
+      if (!response.ok) {
+        throw new Error(`Failed to create payment: ${response.statusText}`);
       }
-    }, 1000);
-  } catch (error) {
-    console.error('Checkout error:', error);
-  }
+
+      const data = await response.json();
+      console.log('Payment intent created:', data);
+
+      cart.message = 'Payment completed. Processing the order. You will get your swag soon!';
+      let currentProgress = 0;
+      const interval = setInterval(() => {
+        currentProgress += 5;
+        progress.value = currentProgress;
+
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+          clearCart();
+          setTimeout(() => {
+            cart.message = '';
+          }, 2000);
+        }
+      }, 1000);
+    } catch (error) {
+      console.error('Checkout error:', error);
+    }
   });
+
 
   // remove all instances of a product
   const removeItems = $((id: number) => {
@@ -120,15 +130,6 @@ export const ShoppingCart = component$(() => {
 
   const total = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const clearCart = $(() => {
-    cart.items = [];
-    saveCartToLocalStorage();
-
-    const bc = new BroadcastChannel('/cart');
-    bc.postMessage({ type: 'cart_cleared' });
-    bc.close();
-  });
-
   // load cart from localStorage or fallback to initial products
   useVisibleTask$(() => {
     const savedCart = localStorage.getItem('shoppingCart');
@@ -166,11 +167,11 @@ export const ShoppingCart = component$(() => {
         <h3 class="subtitle">Your Shopping Cart</h3>
 
         {cart.message ? (
-           <>
-           <p class="success-message">{cart.message}</p>
-           <div class="progress-bar">
-             <div class="progress" style={{ width: `${progress.value}%` }}></div>
-           </div>
+          <>
+          <p class="success-message">{cart.message}</p>
+          <div class="progress-bar">
+            <div class="progress" style={{ width: `${progress.value}%` }}></div>
+          </div>
          </>
         ) : cart.items.length === 0 ? (
           <p>Your cart is empty</p>
