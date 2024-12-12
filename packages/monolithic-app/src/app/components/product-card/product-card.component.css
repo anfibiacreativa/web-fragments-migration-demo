@@ -17,7 +17,8 @@
     margin: 0.5rem 0;
 }
 
-/* .jskldfjd {
-  background: url('../../../assets/images/product1.png') center/cover no-repeat;
-} */
-
+@media screen and (min-width: 900px) {
+  .product-image {
+    height: 330px;
+  }
+}

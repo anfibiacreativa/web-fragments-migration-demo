@@ -1,14 +1,105 @@
 .layout {
-    display: grid;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-auto-flow: dense;
+  grid-template-areas:
+      'right'
+      'left';
+}
+.cart-sidebar {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Hidden off-screen */
+  width: 80%; /* Panel width */
+  height: 100%; /* Full height */
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transform: translateX(100%); /* Hidden state */
+}
+.cart-sidebar.open {
+  transform: translateX(0);
+  right: 0;
+}
+.products {
+  grid-area: left;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+@media screen and (min-width: 900px) {
+  .btn-toggle-cart {
+    display: none;
+  }
+  .btn-toggle-cart.close {
+    display: none;
+  }
+  .layout {
     grid-template-columns: 1fr 300px;
     gap: 2rem;
     padding: 2rem 0;
+    grid-template-areas:
+    'left right';
   }
   .cart-sidebar {
-    position: sticky;
-    top: 2rem;
+    position: static;
+    transform: none; /* No sliding behavior */
+    width: auto; /* Default column width */
+    height: auto; /* Default height */
+    box-shadow: none; /* No shadow needed for static layout */
   }
-  a {
-    text-decoration: none;
-    color: inherit;
+  .backdrop {
+    display: none;
+    visibility: 0;
   }
+}
+
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 999;
+}
+
+.backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.btn-toggle-cart {
+  margin-top: -50px;
+  background-color: fuchsia;
+  border: 2px solid fuchsia;
+  color: white;
+  border-radius: 50%;
+  padding: 20px;
+  transition: color 0.3s ease;
+  position: relative;
+  cursor: pointer;
+  font-size: 30px;
+}
+
+.btn-toggle-cart.close {
+  margin-top: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.btn-toggle-cart:hover {
+  color: fuchsia;
+  background-color: white;
+  transform: scale(1.1);
+  transition: all 0.3s linear;
+}
+
+.btn-toggle-cart.close:hover {
+  transform: none;
+}

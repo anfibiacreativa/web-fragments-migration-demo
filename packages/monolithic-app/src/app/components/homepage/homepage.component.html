@@ -1,6 +1,10 @@
 <div class="container">
+  <div class="backdrop" [class.visible]="isCartOpen" (click)="toggleCart()"></div>
   <h1 class="title">Ecommerce Monolithic Clientside App</h1>
   <app-countdown-banner></app-countdown-banner>
+  <button class="btn-toggle-cart" (click)="toggleCart()">
+    <i class="fa-solid fa-cart-shopping"></i>
+  </button>
   <div class="layout">
     <div class="products">
       <div class="grid">
@@ -11,7 +15,10 @@
         }
       </div>
     </div>
-    <aside class="cart-sidebar">
+    <aside class="cart-sidebar" [class.open]="isCartOpen">
+      <button class="btn-toggle-cart close" (click)="toggleCart()">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </button>
       <app-shopping-cart />
     </aside>
   </div>

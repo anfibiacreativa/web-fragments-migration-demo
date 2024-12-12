@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ProductCardComponent } from '../product-card/product-card.component';
@@ -16,5 +16,20 @@ import { CountdownBannerComponent } from "../countdown-banner/countdown-banner.c
 export class HomePageComponent {
   constructor(private productService: ProductService) {}
 
+  isCartOpen = false;
+
+  toggleCart(): void {
+    this.isCartOpen = !this.isCartOpen;
+  }
+
   products = this.productService.getProducts();
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event): void {
+    const viewportWidth = window.innerWidth;
+
+    if (this.isCartOpen && viewportWidth >= 900) {
+      this.toggleCart();
+    }
+  }
 }
