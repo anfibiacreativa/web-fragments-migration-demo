@@ -24,3 +24,7 @@ dist/
 
 # server
 packages/payment-service/src/server
+
+# playwright
+playwright-report
+test-results
