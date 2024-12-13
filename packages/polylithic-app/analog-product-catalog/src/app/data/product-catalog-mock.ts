@@ -8,7 +8,7 @@ export const products: Product[] = [
     price: 29.99,
     color: 'Red',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product1.png',
     rating: 4.5
   },
   {
@@ -18,7 +18,7 @@ export const products: Product[] = [
     price: 24.99,
     color: 'Blue',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product2.png',
     rating: 4.8
   },
   {
@@ -28,7 +28,7 @@ export const products: Product[] = [
     price: 49.99,
     color: 'Black',
     size: 'XL',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product3.png',
     rating: 4.6
   },
   {
@@ -38,7 +38,7 @@ export const products: Product[] = [
     price: 19.99,
     color: 'Green',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product4.png',
     rating: 4.7
   },
   {
@@ -48,7 +48,7 @@ export const products: Product[] = [
     price: 39.99,
     color: 'Grey',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product5.png',
     rating: 4.3
   },
   {
@@ -58,7 +58,7 @@ export const products: Product[] = [
     price: 12.99,
     color: 'Pink',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product6.png',
     rating: 4.0
   },
   {
@@ -68,7 +68,7 @@ export const products: Product[] = [
     price: 14.99,
     color: 'White',
     size: '300ml',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product7.png',
     rating: 4.9
   },
   {
@@ -78,7 +78,7 @@ export const products: Product[] = [
     price: 27.99,
     color: 'Orange',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product8.png',
     rating: 4.7
   },
   {
@@ -88,7 +88,7 @@ export const products: Product[] = [
     price: 44.99,
     color: 'Grey',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product9.png',
     rating: 4.8
   },
   {
@@ -98,7 +98,7 @@ export const products: Product[] = [
     price: 19.99,
     color: 'Black',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product10.png',
     rating: 4.4
   },
   {
@@ -108,7 +108,7 @@ export const products: Product[] = [
     price: 16.99,
     color: 'Brown',
     size: '300ml',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product11.png',
     rating: 4.2
   },
   {
@@ -118,7 +118,7 @@ export const products: Product[] = [
     price: 8.99,
     color: 'Silver',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product12.png',
     rating: 4.6
   },
   {
@@ -128,7 +128,7 @@ export const products: Product[] = [
     price: 49.99,
     color: 'Blue',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product13.png',
     rating: 4.8
   },
   {
@@ -138,7 +138,7 @@ export const products: Product[] = [
     price: 22.99,
     color: 'Black',
     size: 'S',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product14.png',
     rating: 4.7
   },
   {
@@ -148,7 +148,7 @@ export const products: Product[] = [
     price: 13.99,
     color: 'Black',
     size: '300ml',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product15.png',
     rating: 4.5
   },
   {
@@ -158,7 +158,7 @@ export const products: Product[] = [
     price: 26.99,
     color: 'White',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product16.png',
     rating: 4.8
   },
   {
@@ -168,7 +168,7 @@ export const products: Product[] = [
     price: 42.99,
     color: 'Black',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product17.png',
     rating: 4.7
   },
   {
@@ -178,7 +178,7 @@ export const products: Product[] = [
     price: 29.99,
     color: 'Orange',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product18.png',
     rating: 4.9
   },
   {
@@ -188,7 +188,7 @@ export const products: Product[] = [
     price: 15.99,
     color: 'Green',
     size: '300ml',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product19.png',
     rating: 4.4
   },
   {
@@ -198,7 +198,7 @@ export const products: Product[] = [
     price: 19.99,
     color: 'Grey',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product20.png',
     rating: 4.6
   },
   {
@@ -208,7 +208,7 @@ export const products: Product[] = [
     price: 7.99,
     color: 'Red',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product21.png',
     rating: 4.5
   },
   {
@@ -218,7 +218,7 @@ export const products: Product[] = [
     price: 21.99,
     color: 'Purple',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product22.png',
     rating: 4.2
   },
   {
@@ -228,7 +228,7 @@ export const products: Product[] = [
     price: 24.99,
     color: 'Red',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product23.png',
     rating: 4.7
   },
   {
@@ -238,7 +238,7 @@ export const products: Product[] = [
     price: 18.99,
     color: 'Blue',
     size: 'One size',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product24.png',
     rating: 4.5
   },
   {
@@ -248,7 +248,7 @@ export const products: Product[] = [
     price: 48.99,
     color: 'Purple',
     size: 'XL',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product25.png',
     rating: 4.6
   },
   {
@@ -258,7 +258,7 @@ export const products: Product[] = [
     price: 16.99,
     color: 'White',
     size: '300ml',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product26.png',
     rating: 4.8
   },
   {
@@ -268,7 +268,7 @@ export const products: Product[] = [
     price: 27.99,
     color: 'Black',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product27.png',
     rating: 4.3
   },
   {
@@ -278,7 +278,7 @@ export const products: Product[] = [
     price: 45.99,
     color: 'Dark Green',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product28.png',
     rating: 4.5
   },
   {
@@ -288,7 +288,7 @@ export const products: Product[] = [
     price: 31.99,
     color: 'Orange',
     size: 'M',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product29.png',
     rating: 4.6
   },
   {
@@ -298,7 +298,7 @@ export const products: Product[] = [
     price: 49.99,
     color: 'Black',
     size: 'L',
-    imageUrl: 'https://placehold.co/300x400',
+    imageUrl: '_fragment/analog/assets/images/product30.png',
     rating: 4.8
   }
 ]

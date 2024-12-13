@@ -23,6 +23,7 @@ export class CartService {
     const productIndex = this.cartItems.findIndex(item => item.product.id === product.id);
     if (productIndex === -1) {
       this.cartItems.push({ product, quantity: 1 });
+      console.log('##### product', JSON.stringify(product));
     } else {
       this.cartItems[productIndex].quantity += 1;
     }
