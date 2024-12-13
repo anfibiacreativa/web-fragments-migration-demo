@@ -73,11 +73,25 @@ test.describe('Shell Application Tests', () => {
   test('Quantity is updated for items', async ({ page }) => {
     await page.goto('/store/catalogue');
 
-    // click add to cart button
     await page.click('button:has-text("Add to Cart")');
-    // verify new item added to cart
-    await page.waitForTimeout(5000);
-    const item = page.locator('li.cart-item').first;
-    
-  });
+    const item = page.locator('li.cart-item').first();
+    await expect(item).toBeVisible();
+
+    const quantityInput = item.locator('.quantity-input');
+    const increaseButton = item.locator('.quantity-controls .btn').nth(1);
+    const decreaseButton = item.locator('.quantity-controls .btn').nth(0);
+
+    await expect(quantityInput).toHaveValue('2');
+
+
+    await increaseButton.click();
+    await expect(quantityInput).toHaveValue('3');
+
+    await decreaseButton.click();
+    await expect(quantityInput).toHaveValue('2');
+
+    await decreaseButton.click();
+    await expect(quantityInput).toHaveValue('1');
+});
+
 });
