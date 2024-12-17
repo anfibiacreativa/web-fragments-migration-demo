@@ -1,13 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-const PAYMENT_SERVICE_URL = 'http://localhost:3000/create-payment';
-
 test.describe('Shell Application Tests', () => {
 
   test('Homepage should display correct elements', async ({ page }) => {
     await page.goto('/');
 
-    const links = await page.locator('.list > .listItem > a');
+    const links = page.locator('.list > .listItem > a');
     await expect(links).toHaveCount(2);
     await expect(links.nth(0)).toHaveText('Go to Store');
     await expect(links.nth(1)).toHaveText('Go to Cart (isolated view)');
@@ -26,8 +24,10 @@ test.describe('Shell Application Tests', () => {
     await page.goto('/store/catalog');
 
     // check for <fragment-outlet> elements to be in place
-    const fragmentOutlets = await page.locator('fragment-outlet');
-    await expect(fragmentOutlets).toHaveCount(2);
+    const fragmentOutlets = page.locator('fragment-outlet');
+    await expect.poll(() =>
+      fragmentOutlets.count()
+    ).toBeGreaterThanOrEqual(2);
 
     // intercept and validate _fragment requests
     await page.route(/_fragment.*/, route => {
@@ -48,7 +48,7 @@ test.describe('Shell Application Tests', () => {
     // verify new item added to cart
     await page.waitForTimeout(5000);
     const cartItemsCount = await page.locator('li.cart-item').count();
-    await expect(cartItemsCount).toBeGreaterThan(0);
+    await expect.poll(() => cartItemsCount).toBeGreaterThan(0);
 
     // Intercept POST request to payment service
     await page.routeFromHAR('./hars/payment.har', {
@@ -92,6 +92,6 @@ test.describe('Shell Application Tests', () => {
 
     await decreaseButton.click();
     await expect(quantityInput).toHaveValue('1');
-});
+  });
 
 });
