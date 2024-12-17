@@ -74,7 +74,7 @@ export const ShoppingCart = component$(() => {
           clearCart();
           setTimeout(() => {
             cart.message = '';
-          }, 2000);
+          }, 1000);
         }
       }, 1000);
     } catch (error) {

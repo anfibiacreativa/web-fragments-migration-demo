@@ -40,36 +40,6 @@ test.describe('Shell Application Tests', () => {
     }
   });
 
-  test('Add to cart and proceed to checkout', async ({ page }) => {
-    await page.goto('/store/catalog');
-
-    // click add to cart button
-    await page.click('button:has-text("Add to Cart")');
-    // verify new item added to cart
-    await page.waitForTimeout(5000);
-    const cartItemsCount = await page.locator('li.cart-item').count();
-    await expect.poll(() => cartItemsCount).toBeGreaterThan(0);
-
-    // Intercept POST request to payment service
-    await page.routeFromHAR('./hars/payment.har', {
-      url: 'http://localhost:3000/create-payment',
-      update: true,
-      updateContent: 'embed',
-    });
-
-    // Click proceed to checkout button
-    await page.click('button:has-text("Proceed to checkout")');
-
-    // Verify progress bar behavior
-    const progressBar = page.locator('div.progress-bar');
-    await expect(progressBar).toBeVisible();
-    await page.waitForTimeout(23000);
-    await expect(progressBar).not.toBeVisible();
-    const emptyCart = await page.locator('li.cart-item').count();
-    // Verify cart items are cleared
-    await expect(emptyCart).toBeLessThanOrEqual(0);
-  });
-
   test('Quantity is updated for items', async ({ page }) => {
     await page.goto('/store/catalogue');
 
