@@ -21,9 +21,21 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-  webServer: {
-    command: 'pnpm run build && pnpm run server:start',
-    url: 'http://localhost:4000',
-    reuseExistingServer: useLocalServer,
-  },
+  webServer: [
+    {
+      command: 'cd ../qwik-shopping-cart && pnpm preview',
+      url: 'http://localhost:4173',
+      reuseExistingServer: useLocalServer,
+    },
+    {
+      command: 'cd ../analog-product-catalog && pnpm preview',
+      url: 'http://localhost:4174',
+      reuseExistingServer: useLocalServer,
+    },
+    {
+      command: 'pnpm run build && pnpm run server:start',
+      url: 'http://localhost:4000',
+      reuseExistingServer: useLocalServer,
+    }
+],
 });

@@ -7,21 +7,19 @@ test.describe('Iframes are created test', () => {
 
   test('Check for hidden iframes', async ({ page }) => {
     await page.goto('/store/catalog');
-    await page.waitForTimeout(6000);
 
     // check that frames are in place and reframed
-    const iframes = await page.frameLocator('iframe').locator('hidden');
-    // await expect(iframes).toHaveCount(2);
-
+    const iframes = page.locator('iframe[hidden]');
+    await expect(iframes).toHaveCount(2);
 
     for (let i = 0; i < 2; i++) {
-      const frame = await iframes.nth(i).contentFrame();
+      const frame = iframes.nth(i).contentFrame();
       console.log(frame, '### frame');
-      expect(frame).not.toBeNull();
-      // const headTitle = await frame.locator('head > title');
-      // const bodyScripts = await frame.locator('body > script').count();
-      // await expect(headTitle).toHaveText('');
-      // await expect(bodyScripts).toBeGreaterThan(0);
+      const headTitle = frame.locator('head > title');
+      await expect(headTitle).toHaveText('');
+      await expect.poll(() =>
+        frame.locator('body > script').count()
+      ).toBeGreaterThan(0);
     }
   });
 });
