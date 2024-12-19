@@ -25,13 +25,12 @@ type ExpressMiddleware = (
   next: NextFunction,
 ) => void;
 
-
 /**
  * Creates an instance of ExpressMiddleware to be used in an Express server powering a Fragment Gateway
- * 
+ *
  * @param gateway instance of a FragmentGateway
  * @param options FragmentMiddlewareOptions
- * @returns 
+ * @returns
  */
 export function getMiddleware(
   gateway: FragmentGateway,
@@ -163,7 +162,7 @@ export function getMiddleware(
 
   /**
    * Embeds the fragment SSR stream into the final response.
-   * 
+   *
    * TODO: This implementation uses Trumpet, which works for this use-case but is not reliable for other html rewriting needs
    * so we should just switch to HTMLRewriter as started in embedFragmentSSR2.
    */
@@ -199,7 +198,7 @@ export function getMiddleware(
 
       const processedBody = await processFragmentForReframing(fragmentResponse).text();
       mergeStreams(
-        
+
         NodeReadable.from(fragmentHostPrefix),
         NodeReadable.from(processedBody),
         NodeReadable.from(fragmentHostSuffix),

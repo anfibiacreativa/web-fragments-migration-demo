@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Checkout Tests', () => {
   const PAYMENT_ENDPOINT = 'http://localhost:3000/create-payment';
+  const HAR_PATH = './packages/polylithic-app/shell-prod-server/tests/e2e/'
 
   test('Add to cart and proceed to checkout', async ({ page }) => {
     await page.goto('/store/catalog');
@@ -14,7 +15,7 @@ test.describe('Checkout Tests', () => {
     await expect.poll(() => cartItemsCount).toBeGreaterThan(0);
 
     // Intercept POST request to payment service
-    await page.routeFromHAR('./hars/payment.har', {
+    await page.routeFromHAR(`${HAR_PATH}hars/payment.har`, {
       url: PAYMENT_ENDPOINT,
       update: true,
       updateContent: 'embed',
