@@ -171,6 +171,7 @@ a:hover {
 fragment-outlet {
   outline: 3px dotted transparent;
   border-radius: 20px;
+  display: block;
 }
 
 /* add borders */
