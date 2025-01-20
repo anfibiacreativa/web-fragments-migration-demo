@@ -1,0 +1,91 @@
+.cart {
+  padding: 1rem;
+}
+.cartItems {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.cartItem {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.cartItemsFooter {
+  display: flex;
+}
+.cartImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.quantityControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cartSummary {
+  margin-top: 2rem;
+  text-align: right;
+}
+.total {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.errorMessage {
+  background-color: red;
+  margin-top: 10px;
+  padding: 20px;
+  color: white;
+  font-size: small;
+}
+.statusMessage {
+  margin-top: 20px;
+  text-align: center;
+}
+.progressBar {
+  width: 100%;
+  background-color: #f3f3f3;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+  height: 10px;
+}
+.progress {
+  height: 100%;
+  background-color: #4caf50;
+  width: 0;
+  transition: width 1s linear;
+}
+
+.cartSidebar {
+  position: fixed;
+  top: 0;
+  right: -100%; /* Hidden off-screen */
+  width: 80%; /* Panel width */
+  height: 100%; /* Full height */
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transform: translateX(100%); /* Hidden state */
+}
+.cartSidebar.open {
+  transform: translateX(0);
+  right: 0;
+}
+
+@media screen and (min-width: 900px) {
+  .cartSidebar {
+    position: static;
+    transform: none;
+    width: auto;
+    height: auto;
+    z-index: 3;
+    box-shadow: none;
+    grid-area: right;
+  }
+}

@@ -1,0 +1,29 @@
+.productDetail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  display: flex;
+  gap: 20px;
+  max-width: 800px;
+  width: 100%;
+}
+
+.productImage {
+  max-width: 300px;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
