@@ -15,7 +15,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {children}
       </div>
     </main>
-    <footer className={styles.footer}>Footer</footer>
+    <footer className='footer'>
+      <p><a href="">©2025 | Web Fragments Enterprise Demo</a></p>
+    </footer>
     </div>
   );
 };

@@ -81,3 +81,35 @@ export const useCart = () => {
 
   return state;
 };
+
+export const useCartToggle = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const toggleCart = (event: React.MouseEvent | null = null): void => {
+    const cartSidebar = document.querySelector('.cartSidebar');
+    const backdrop = document.querySelector('.backdrop');
+
+    if (cartSidebar) {
+      cartSidebar.classList.toggle('open');
+      backdrop?.classList.toggle('visible');
+    }
+
+    setIsCartOpen((prevState) => !prevState);
+  };
+
+  useEffect(() => {
+    function handleResize() {
+      const viewportWidth = window.innerWidth;
+      if (isCartOpen && viewportWidth >= 900) {
+        toggleCart(null);
+      }
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isCartOpen]);
+
+  return { isCartOpen, toggleCart };
+};
