@@ -2,9 +2,11 @@ import React from 'react';
 import { useCart, updateQuantity, removeFromCart } from '../utils/cartState';
 import { processPayment, PaymentRequest } from '../utils/paymentService';
 import styles from '../styles/ShoppingCart.module.css';
+import { useCartToggle } from '../utils/cartState';
 
 const ShoppingCart: React.FC = () => {
   const cart = useCart();
+  const { isCartOpen, toggleCart } = useCartToggle();
 
   const handleProceedToPayment = async () => {
     if (cart.length === 0) {
@@ -42,7 +44,10 @@ const ShoppingCart: React.FC = () => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className={styles.cartSidebar}>
+    <aside className={isCartOpen ? 'cartSidebar open' : 'cartSidebar'}>
+      <button className='btn-toggle-cart close' onClick={toggleCart}>
+        <i className='fa-solid fa-circle-xmark'></i>
+      </button>
       <div className={styles.cart}>
         <h3>Your Shopping Cart</h3>
         {cart.length === 0 ? (
@@ -83,7 +88,7 @@ const ShoppingCart: React.FC = () => {
           </>
         )}
       </div>
-    </div>
+    </aside>
   );
 };
 

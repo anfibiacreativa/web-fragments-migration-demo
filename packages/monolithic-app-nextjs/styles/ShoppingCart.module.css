@@ -62,30 +62,3 @@
   transition: width 1s linear;
 }
 
-.cartSidebar {
-  position: fixed;
-  top: 0;
-  right: -100%; /* Hidden off-screen */
-  width: 80%; /* Panel width */
-  height: 100%; /* Full height */
-  background-color: #fff;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  transform: translateX(100%); /* Hidden state */
-}
-.cartSidebar.open {
-  transform: translateX(0);
-  right: 0;
-}
-
-@media screen and (min-width: 900px) {
-  .cartSidebar {
-    position: static;
-    transform: none;
-    width: auto;
-    height: auto;
-    z-index: 3;
-    box-shadow: none;
-    grid-area: right;
-  }
-}
