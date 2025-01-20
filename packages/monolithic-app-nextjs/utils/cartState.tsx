@@ -27,7 +27,9 @@ const saveCart = () => {
 };
 
 // Functions to modify the cart
-export const addToCart = (product: CartItem) => {
+export const addToCart = (product: CartItem, e: React.MouseEvent<HTMLButtonElement>) => {
+  e.preventDefault();
+  e.stopPropagation();
   const existingProduct = cart.find((item) => item.id === product.id);
   if (existingProduct) {
     cart = cart.map((item) =>

@@ -1,9 +1,43 @@
 import React from 'react';
 import { useCart, updateQuantity, removeFromCart } from '../utils/cartState';
+import { processPayment, PaymentRequest } from '../utils/paymentService';
 import styles from '../styles/ShoppingCart.module.css';
 
 const ShoppingCart: React.FC = () => {
   const cart = useCart();
+
+  const handleProceedToPayment = async () => {
+    if (cart.length === 0) {
+      alert('Your cart is empty. Please add items to proceed.');
+      return;
+    }
+
+    try {
+      // fake payment request
+      const paymentData: PaymentRequest = {
+        amount: cart.reduce((total, item) => total + item.price * item.quantity, 0),
+        currency: 'EUR',
+        userId: 'someUserId12345'
+      };
+
+      // Call the payment service
+      const response = await processPayment(paymentData);
+
+      if (response.success) {
+        if (response.paymentUrl) {
+          // Redirect to the payment URL if provided
+          window.location.href = response.paymentUrl;
+        } else {
+          alert('Payment successful!');
+        }
+      } else {
+        alert(`Payment failed: ${response.message}`);
+      }
+    } catch (error) {
+      console.error('Error during payment:', error);
+      alert('An error occurred while processing the payment. Please try again.');
+    }
+  };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -20,7 +54,7 @@ const ShoppingCart: React.FC = () => {
                 <li key={item.id} className={styles.cartItem}>
                   <img src={item.image} className={styles.cartImage} alt={item.name} />
                   <div className={styles.itemDetails}>
-                    <h3>{item.name}</h3>
+                    <h4>{item.name}</h4>
                     <p>${item.price}</p>
                   </div>
                   <div className={styles.cartItemsFooter}>
@@ -43,7 +77,9 @@ const ShoppingCart: React.FC = () => {
             <div className={styles.cartSummary}>
               <p className={styles.total}>Total: ${total.toFixed(2)}</p>
             </div>
-            <button className="btn btn-primary">Proceed to Checkout</button>
+            <button className="btn btn-primary" onClick={handleProceedToPayment}>
+              Proceed to Payment
+            </button>
           </>
         )}
       </div>
