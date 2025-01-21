@@ -18,8 +18,8 @@ const ProductGrid: React.FC = () => {
     <div className={styles.products}>
       <div className={styles.grid}>
         {products.map((product) => (
-          <a className={styles.productLink} onClick={() => handleProductClick(product)}>
-            <div key={product.id} className={`${styles.card} ${styles.productCard}`}>
+          <a key={product.id} className={styles.productLink} onClick={() => handleProductClick(product)}>
+            <div className={`${styles.card} ${styles.productCard}`}>
               <img
                 src={`/images/product${product.id}.png`}
                 alt={product.name}

@@ -30,10 +30,10 @@ const ShoppingCart: React.FC = () => {
           // Redirect to the payment URL if provided
           window.location.href = response.paymentUrl;
         } else {
-          alert('Payment successful!');
+          console.log('Payment successful!');
         }
       } else {
-        alert(`Payment failed: ${response.message}`);
+        console.log(`Payment failed: ${response.message}`);
       }
     } catch (error) {
       console.error('Error during payment:', error);
