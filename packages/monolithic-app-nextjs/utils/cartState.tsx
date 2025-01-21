@@ -92,15 +92,13 @@ export const useCartToggle = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const toggleCart = (event: React.MouseEvent | null = null): void => {
-    const cartSidebar = document.querySelector('.cartSidebar');
-    const backdrop = document.querySelector('.backdrop');
+    const cartSidebar = document.querySelector('.cartSidebar') as HTMLElement;
+    const backdrop = document.querySelector('.backdrop') as HTMLElement;
 
     if (cartSidebar) {
       cartSidebar.classList.toggle('open');
-      backdrop?.classList.toggle('visible');
+      backdrop.classList.toggle('visible');
     }
-
-    setIsCartOpen((prevState) => !prevState);
   };
 
   useEffect(() => {
