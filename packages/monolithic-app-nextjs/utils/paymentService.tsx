@@ -10,19 +10,12 @@ export interface PaymentRequest {
   userId: string;
 }
 
-export interface PaymentResponse {
-  success: boolean;
-  message: string;
-  paymentUrl?: string;
-}
-
-export const processPayment = async (paymentData: PaymentRequest): Promise<PaymentResponse> => {
+export const processPayment = async (paymentData: PaymentRequest): Promise<any> => {
   try {
     const response: PaymentResponse = await sharedPost(PAYMENT_API_URL, paymentData);
-
     return response;
   } catch (error) {
     console.error('Payment processing failed:', error);
-    throw new Error('Failed to process the payment. Please try again.');
+    throw new Error(`Failed to process the payment due to ${error}. Please try again.`);
   }
 };

@@ -48,17 +48,17 @@
   text-align: center;
 }
 .progressBar {
-  width: 100%;
   background-color: #f3f3f3;
-  border-radius: 8px;
+  border-radius: 4px;
+  height: 10px; /* Ensure a fixed height */
+  margin: 10px 0;
   overflow: hidden;
-  margin-top: 10px;
-  height: 10px;
-}
-.progress {
-  height: 100%;
-  background-color: #4caf50;
-  width: 0;
-  transition: width 1s linear;
+  width: 100%;
+  border: 1px solid black; /* Optional: For debugging */
 }
 
+.progress {
+  background-color: #4caf50;
+  height: 100%; /* Matches parent height */
+  transition: width 0.5s ease;
+}

@@ -48,6 +48,12 @@ export const removeFromCart = (id: number) => {
   notifyListeners();
 };
 
+export const clearCart = () => {
+  cart = [];
+  saveCart();
+  notifyListeners();
+};
+
 export const updateQuantity = (id: number, delta: number) => {
   cart = cart
     .map((item) =>
