@@ -1,5 +1,5 @@
-import React from 'react';
-import { useCart, updateQuantity, removeFromCart } from '../utils/cartState';
+import React, { useState } from 'react';
+import { useCart, updateQuantity, removeFromCart, clearCart } from '../utils/cartState';
 import { processPayment, PaymentRequest } from '../utils/paymentService';
 import styles from '../styles/ShoppingCart.module.css';
 import { useCartToggle } from '../utils/cartState';
@@ -7,6 +7,11 @@ import { useCartToggle } from '../utils/cartState';
 const ShoppingCart: React.FC = () => {
   const cart = useCart();
   const { isCartOpen, toggleCart } = useCartToggle();
+  const [isError, setIsError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [message, setMessage] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const handleProceedToPayment = async () => {
     if (cart.length === 0) {
@@ -15,44 +20,70 @@ const ShoppingCart: React.FC = () => {
     }
 
     try {
-      // fake payment request
+      setIsProcessingPayment(true);
+      setMessage('Processing your payment... Please wait.');
+      setProgress(0);
+
       const paymentData: PaymentRequest = {
         amount: cart.reduce((total, item) => total + item.price * item.quantity, 0),
         currency: 'EUR',
-        userId: 'someUserId12345'
+        userId: 'someUserId12345',
       };
 
-      // Call the payment service
+      console.log('Attempting payment with total:', paymentData.amount);
       const response = await processPayment(paymentData);
+      console.log('Payment successful:', response);
 
-      if (response.success) {
-        if (response.paymentUrl) {
-          // Redirect to the payment URL if provided
-          window.location.href = response.paymentUrl;
-        } else {
-          console.log('Payment successful!');
-        }
-      } else {
-        console.log(`Payment failed: ${response.message}`);
-      }
+      const interval = setInterval(() => {
+        setProgress((prevProgress) => {
+          const nextProgress = prevProgress + 10;
+          if (nextProgress >= 100) {
+            clearInterval(interval);
+            setProgress(0);
+            setMessage('');
+            clearCart();
+            setIsProcessingPayment(false);
+          }
+          return nextProgress;
+        });
+      }, 500);
     } catch (error) {
-      console.error('Error during payment:', error);
-      alert('An error occurred while processing the payment. Please try again.');
+      if (error instanceof Error) {
+        setErrorMessage(error.message);
+        setIsError(true);
+        setIsProcessingPayment(false);
+        showErrorNotification(error.message);
+      }
     }
+  };
+
+  const showErrorNotification = (error: string) => {
+    alert(`Payment failed: ${error}`);
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <aside className={isCartOpen ? 'cartSidebar open' : 'cartSidebar'}>
-      <button className='btn-toggle-cart close' onClick={toggleCart}>
-        <i className='fa-solid fa-circle-xmark'></i>
+      <button className="btn-toggle-cart close" onClick={toggleCart}>
+        <i className="fa-solid fa-circle-xmark"></i>
       </button>
       <div className={styles.cart}>
         <h3>Your Shopping Cart</h3>
-        {cart.length === 0 ? (
-          <p>Your cart is empty. Add some products to get started!</p>
-        ) : (
+
+        {message && <p className={styles.statusMessage}>{message}</p>}
+
+        {isProcessingPayment && (
+          <div className={styles.progressBar}>
+            <div className={styles.progress} style={{ width: `${progress}%` }}></div>
+          </div>
+        )}
+        
+        {!isProcessingPayment && cart.length === 0 && progress === 0 && (
+          <p className={styles.message}>Your cart is empty. Add some products to get started!</p>
+        )}
+
+        {!isProcessingPayment && cart.length > 0 && (
           <>
             <ul className={styles.cartItems}>
               {cart.map((item) => (
@@ -73,7 +104,7 @@ const ShoppingCart: React.FC = () => {
                       </button>
                     </div>
                     <button className="btn remove-btn" onClick={() => removeFromCart(item.id)}>
-                    x
+                      x
                     </button>
                   </div>
                 </li>
@@ -85,6 +116,7 @@ const ShoppingCart: React.FC = () => {
             <button className="btn btn-primary" onClick={handleProceedToPayment}>
               Proceed to Payment
             </button>
+            {isError && <p className={styles.errorMessage}>{errorMessage}</p>}
           </>
         )}
       </div>
