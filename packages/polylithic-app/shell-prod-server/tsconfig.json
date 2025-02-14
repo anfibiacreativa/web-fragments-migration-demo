@@ -9,6 +9,5 @@
     "strict": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "types/**/*"],
-  "exclude": ["node_modules", "src/app_bckup.ts"]
+  "include": ["src/**/*", "types/**/*"]
 }
