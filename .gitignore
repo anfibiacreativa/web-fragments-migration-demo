@@ -5,6 +5,7 @@ node_modules
 # build
 dist
 dist/
+dist-react/
 
 # env vars
 .env*
@@ -31,3 +32,6 @@ test-results
 
 # next
 .next
+
+# reframed
+reframed/
