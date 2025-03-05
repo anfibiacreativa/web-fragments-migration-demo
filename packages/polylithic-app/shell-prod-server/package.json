@@ -6,17 +6,17 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start:server": "node dist/app.js",
-    "dev": "ts-node-dev --respawn src/app.ts",
+    "start:server:react": "node dist/app-react.js",
+    "start:server:angular": "node dist/app-angular.js",
+    "dev:angular": "ts-node-dev --respawn src/app-angular.ts",
+    "dev:react": "ts-node-dev --respawn src/app-react.ts",
     "build": "tsc",
     "clean": "rm -rf dist",
     "test:e2e": "npx playwright test"
   },
   "dependencies": {
-    "@gofunky/trumpet": "^3.0.3",
     "express": "^5.0.1",
-    "htmlrewriter": "^0.0.12",
-    "web-fragments": "catalog:"
+    "web-fragments": "^0.3.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
@@ -29,6 +29,5 @@
     "prod-server",
     "web-fragments-shell"
   ],
-  "author": "Natalia Venditto",
   "license": "MIT"
 }
