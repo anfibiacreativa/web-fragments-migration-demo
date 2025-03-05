@@ -28,8 +28,5 @@ export default async function render(
     platformProviders: [provideServerContext(serverContext)],
   });
 
-  // TODO: move to express middleware
-  return html.replace(/\<html lang="en"\>/, '<wf-html>').replace(/\<\/html>/, '</wf-html>').
-              replace(/\<head\>/, '<wf-head>').replace(/\<\/head\>/, '</wf-head>').
-              replace(/\<body\>/, '<wf-body>').replace(/\<\/body\>/, '</wf-body>');
+  return html;
 }
