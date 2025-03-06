@@ -34,11 +34,28 @@ const gateway = new FragmentGateway({
 });
 
 // register fragment: analog
+// gateway.registerFragment({
+//   fragmentId: 'store',
+//   prePiercingClassNames: ['store'],
+//   routePatterns: ['/store/:_*','/_fragment/analog/:_*'],
+//   endpoint: 'http://localhost:4174',
+//   onSsrFetchError: () => ({
+//     response: new Response(
+//       `<p id="store-fragment-not-found">
+//          <style>#store-fragment-not-found { color: red; font-size: 2rem; }</style>
+//          Store fragment could not be loaded
+//        </p>`,
+//       { headers: [['content-type', 'text/html']] }
+//     ),
+//   }),
+// });
+
+// register fragment: nuxt
 gateway.registerFragment({
   fragmentId: 'store',
   prePiercingClassNames: ['store'],
-  routePatterns: ['/store/:_*','/_fragment/analog/:_*'],
-  endpoint: 'http://localhost:4174',
+  routePatterns: ['/store/:_*','/_fragment/nuxt/:_*'],
+  endpoint: 'http://localhost:4175',
   onSsrFetchError: () => ({
     response: new Response(
       `<p id="store-fragment-not-found">
