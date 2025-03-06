@@ -4,13 +4,15 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "NITRO_PORT=4000 HOST=0.0.0.0 nuxt dev",
+    "dev": "NITRO_PORT=4001 HOST=0.0.0.0 nuxt dev",
     "generate": "nuxt generate",
-    "preview": "NITRO_PORT=3007 nuxt preview",
+    "preview": "NITRO_PORT=4158 nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "nuxt": "3.10.3"
+    "nuxt": "^3.15.4",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "engines": {
     "node": ">=18.0.0"
