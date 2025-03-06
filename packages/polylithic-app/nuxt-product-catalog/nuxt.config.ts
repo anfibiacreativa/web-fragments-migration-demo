@@ -1,6 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: false },
+  devtools: { enabled: true },
+  compatibilityDate: '2024-11-01',
+  ssr: true,
   app: {
     head: {
       title: 'Nuxt Product Catalog',
@@ -10,5 +12,5 @@ export default defineNuxtConfig({
       ]
     }
   },
-  css: ['~/assets/styles.css']
+  css: ['~/assets/styles.css'],
 })
