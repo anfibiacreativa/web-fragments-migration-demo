@@ -4,6 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   ssr: true,
   app: {
+    buildAssetsDir: '/_fragment/nuxt/assets/',
     head: {
       title: 'Nuxt Product Catalog',
       meta: [
@@ -11,6 +12,21 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' }
       ]
     }
+  },
+  routeRules: {
+    '/': { redirect: '/store/catalog' },
+  },
+  nitro: {
+    output: {
+      dir: 'dist',
+      publicDir: 'dist/public',
+    },
+    publicAssets: [
+      {
+        dir: 'dist/public',
+        baseURL: '/_fragment/nuxt/assets/',
+      }
+    ]
   },
   css: ['~/assets/styles.css'],
 })

@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { products } from '../../data/product-catalog-mock';
+import { products } from '../../../data/product-catalog-mock';
 import StarRating from '~/components/StarRating.vue';
 
 const route = useRoute();
