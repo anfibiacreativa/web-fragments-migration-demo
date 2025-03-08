@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import { FragmentGateway } from 'web-fragments/gateway';
-// @ts-ignore
 import { getNodeMiddleware } from 'web-fragments/gateway/node';
 
 const PORT = process.env.PORT || 3008;

@@ -28,7 +28,7 @@ const stars = computed(() => [1, 2, 3, 4, 5]);
 <style scoped>
 .stars {
   color: #ddd;
-  font-size: 1.2rem;
+  font-size: 1rem;
 }
 
 .star {

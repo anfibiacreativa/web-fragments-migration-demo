@@ -10,7 +10,7 @@
 
       <div class="footer">
         <span class="price">${{ product.price }}</span>
-        <button class="button" @click.stop>Add to Cart</button>
+        <button class="button" @click.stop="addToCart(product)">Add to Cart</button>
       </div>
     </div>
   </div>
@@ -18,12 +18,15 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue';
-import type { Product } from '../types/types'; // Ensure the Product type is correctly imported
+import type { Product } from '@/types/types';
 import StarRating from './StarRating.vue';
+import { CartService } from '@/shared/cartService';
 
-defineProps<{
-  product: Product;
-}>();
+defineProps<{ product: Product }>()
+
+const addToCart = (product: Product) => {
+  CartService.addToCart(product);
+}
 </script>
 
 <style scoped>
