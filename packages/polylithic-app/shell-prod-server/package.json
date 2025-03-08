@@ -16,14 +16,14 @@
   },
   "dependencies": {
     "express": "^5.0.1",
-    "web-fragments": "^0.3.0"
+    "web-fragments": "catalog:"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
     "@types/express": "^5.0.0",
     "@types/node": "^22.9.3",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "typescript": "catalog:"
   },
   "keywords": [
     "prod-server",

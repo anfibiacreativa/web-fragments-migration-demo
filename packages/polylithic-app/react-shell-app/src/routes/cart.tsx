@@ -20,7 +20,7 @@ function App() {
           {/* <ProductGrid /> */}
                     {/*
 // @ts-expect-error: Fragment outlet is not recognized by TypeScript */}
-          <fragment-outlet fragment-id="cart" />
+          <web-fragment fragment-id="cart" />
           {/* <ShoppingCart /> */}
         </div>
       </div>

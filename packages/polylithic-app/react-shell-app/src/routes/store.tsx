@@ -1,6 +1,6 @@
 import Layout from '../components/Layout';
 import Banner from '../components/CountDownBanner';
-import ShoppingCart from '../components/ShoppingCart';
+// import ShoppingCart from '../components/ShoppingCart';
 import { useCartToggle } from '../utils/cartState';
 
 function App() {
@@ -19,8 +19,11 @@ function App() {
           {/* <ProductGrid /> */}
           {/*
 // @ts-expect-error: Fragment outlet is not recognized by TypeScript */}
-          <fragment-outlet fragment-id="store" />
-          <ShoppingCart />
+          <web-fragment fragment-id="store" />
+          {/* <ShoppingCart /> */}
+          {/*
+// @ts-expect-error: Fragment outlet is not recognized by TypeScript */}
+          <web-fragment fragment-id="cart" src="/cart" />
         </div>
       </div>
     </Layout>

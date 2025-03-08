@@ -44,7 +44,7 @@ const navigateToProduct = (id: number) => {
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
+  gap: 1rem;
   padding: 2rem 0;
 }
 

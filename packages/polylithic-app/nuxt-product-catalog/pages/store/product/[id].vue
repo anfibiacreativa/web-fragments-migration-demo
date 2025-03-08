@@ -27,7 +27,7 @@
           <p><strong>Color:</strong> {{ product.color }}</p>
           <p><strong>Size:</strong> {{ product.size }}</p>
           <p class="description">{{ product.description }}</p>
-          <button class="button">Add to Cart</button>
+          <button class="button" @click="addToCart(product)">Add to Cart</button>
         </div>
       </div>
     </main>
@@ -39,19 +39,19 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { products } from '../../../data/product-catalog-mock';
 import StarRating from '~/components/StarRating.vue';
-
-const route = useRoute();
-const productId = route.params.id;
+import { CartService } from '@/shared/cartService';
+const route = useRoute()
+const productId = route.params.id
 
 const product = ref<null | {
-  id: number;
-  name: string;
-  imageUrl: string;
-  price: number;
-  description: string;
-  rating: number;
-  color: string;
-  size: string;
+  id: number
+  name: string
+  imageUrl: string
+  price: number
+  description: string
+  rating: number
+  color: string
+  size: string
 }>(null);
 const loading = ref(true);
 const error = ref<string | null>(null);
@@ -77,7 +77,12 @@ onMounted(() => {
   if (process.client) {
     console.log('Client-side - Product Data:', product.value);
   }
-});
+})
+
+// Function to broadcast the product when adding to cart
+const addToCart = (product: any) => {
+  CartService.addToCart(product);
+}
 </script>
 
 <style scoped>

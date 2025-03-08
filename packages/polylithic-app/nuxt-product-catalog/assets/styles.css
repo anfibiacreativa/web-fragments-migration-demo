@@ -68,13 +68,6 @@ a {
   padding: 2rem;
 }
 
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem 0;
-}
-
 .product-card {
   background: var(--card-background);
   border: 1px solid var(--border-color);
@@ -95,10 +88,6 @@ a {
   height: auto;
   object-fit: contain;
   border-radius: 4px;
-}
-
-.product-card .content {
-  padding: 1.5rem;
 }
 
 .product-card h2 {
