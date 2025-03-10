@@ -8,10 +8,12 @@ This sample demonstrates how to migrate a monolithic Angular SPA e-commerce appl
 ## Application design
 
 The e-commerce application consists of a Homepage default route featuring a catalog and the shopping cart area. 
-![ecommerce app](https://github.com/user-attachments/assets/2947391b-ab67-4e17-990a-fde10facb87d)
+
+![webfragments_demo_homepage](https://github.com/user-attachments/assets/1990859c-ce48-49b5-8c99-0d53a82c6625)
 
 Catalog cards link directly to the product detail page.
-![detail page](https://github.com/user-attachments/assets/11fbfccb-6e59-43f7-a7d2-cf8c16bf5915)
+![webfragments_demo_detail](https://github.com/user-attachments/assets/174c2487-8043-44bc-a546-91e41b02233b)
+
 
 ## Application structure
 
