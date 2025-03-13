@@ -36,12 +36,67 @@ export const ShoppingCart = component$(() => {
     bc.close();
   });
 
+  const shootConfetti = $(async () => {
+    console.log('shootConfetti called');
+    const defaults = {
+      spread: 360,
+      ticks: 70,
+      gravity: 0,
+      decay: 0.95,
+      startVelocity: 30,
+      colors: ["006ce9", "ac7ff4", "18b6f6", "713fc2", "ffffff"],
+      origin: {
+        x: 0.5,
+        y: 0.35,
+      },
+    };
+
+    function loadConfetti() {
+      return new Promise<(opts: any) => void>((resolve, reject) => {
+        if ((globalThis as any).confetti) {
+          return resolve((globalThis as any).confetti as any);
+        }
+        const script = document.createElement("script");
+        script.src =
+          "https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js";
+        script.onload = () =>
+          resolve((globalThis as any).confetti as any);
+        script.onerror = reject;
+        document.head.appendChild(script);
+        script.remove();
+      });
+    }
+
+    const confetti = await loadConfetti();
+
+    function shoot() {
+      confetti({
+        ...defaults,
+        particleCount: 80,
+        scalar: 1.2,
+      });
+
+      confetti({
+        ...defaults,
+        particleCount: 60,
+        scalar: 0.75,
+      });
+    }
+
+    setTimeout(shoot, 0);
+    setTimeout(shoot, 100);
+    setTimeout(shoot, 200);
+    setTimeout(shoot, 300);
+    setTimeout(shoot, 400);
+  });
+
   // proceed to checkout
   const checkout = $(async () => {
     const userId = 'fake_user_id';
     const currency = 'EUR';
     const totalAmount = cart.items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
     const payment_endpoint = 'http://localhost:3000/create-payment';
+    console.log('Checkout clicked! Payment endpoint:', payment_endpoint);
 
     try {
       const response = await fetch(payment_endpoint, {
@@ -72,11 +127,12 @@ export const ShoppingCart = component$(() => {
         if (currentProgress >= 100) {
           clearInterval(interval);
           clearCart();
+          shootConfetti();
           setTimeout(() => {
             cart.message = '';
-          }, 1000);
+          }, 200);
         }
-      }, 1000);
+      }, 200);
     } catch (error) {
       console.error('Checkout error:', error);
     }
@@ -213,6 +269,7 @@ export const ShoppingCart = component$(() => {
             <button class="btn btn-primary" onClick$={checkout}>
               Proceed to checkout
             </button>
+            <button class="btn btn-secondary" onClick$={shootConfetti}>Celebrate</button>
           </>
         )}
       </div>
