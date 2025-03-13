@@ -13,7 +13,7 @@ function App() {
     <Layout>
       <div className="container">
         <div className={isCartOpen ? "backdrop visible" : "backdrop"}></div>
-        <h1>Ecommerce Monolithic Clientside App</h1>
+        <h1>Ecommerce Micro-Frontend Application</h1>
         <Banner />
         <button className="btn-toggle-cart" onClick={toggleCart}>
           <i className="fa-solid fa-cart-shopping"></i>

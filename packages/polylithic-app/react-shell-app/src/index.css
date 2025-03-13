@@ -24,7 +24,6 @@ time, mark, audio, video {
   display: flex;
   width: 100%;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -96,7 +95,7 @@ a:hover {
 /* Menu container */
 
 .hero {
-  height: 150px;
+  height: 200px;
 }
 
 /* Header icon links */
@@ -136,8 +135,9 @@ body {
 
 .container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 35px auto;
   padding: 0 1rem;
+  border: 0;
 }
 
 .btn {
@@ -185,11 +185,11 @@ a {
   color: inherit;
 }
 
-.layout {
+/* .layout {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
+} */
 
 .layout {
   display: grid;
@@ -210,7 +210,6 @@ a {
   .layout {
     grid-template-columns: 1fr 300px;
     gap: 2rem;
-    padding: 2rem 0;
     grid-template-areas:
     'left right';
   }

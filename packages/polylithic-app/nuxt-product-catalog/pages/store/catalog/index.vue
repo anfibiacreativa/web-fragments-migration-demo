@@ -45,7 +45,6 @@ const navigateToProduct = (id: number) => {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  padding: 2rem 0;
 }
 
 @media (min-width: 512px) and (max-width: 1023px) {

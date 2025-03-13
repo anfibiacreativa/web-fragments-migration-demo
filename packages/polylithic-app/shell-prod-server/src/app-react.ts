@@ -8,24 +8,27 @@ const PORT = process.env.PORT || 3008;
 // start the gateway
 const gateway = new FragmentGateway({
   prePiercingStyles: `<style id="fragment-piercing-styles" type="text/css">
-      fragment-host[data-piercing="true"] {
+      web-fragment-host[data-piercing="true"] {
         z-index: 1;
 
         &.store {
-          width: calc(100% - 40px);
+          width: calc(100% - 72px);
           position: relative;
-          top: 253px;
+          inset: 0;
+          top: 269px;
           left: 0;
           z-index: 0;
+          box-sizing: border-box;
 
           @media (min-width: 900px) and (max-width: 1023px) {
-            width: 497px;
-            left: -185px;
+            width: 536px;
+            left: -166px;
           }
 
+
           @media (min-width: 1024px) {
-            width: 535px;
-            left: -182px;
+            width: 527px;
+            left: -166px;
           }
         }
       }

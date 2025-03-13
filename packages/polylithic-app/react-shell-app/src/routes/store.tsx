@@ -10,11 +10,13 @@ function App() {
     <Layout>
       <div className='container'>
         <div className={isCartOpen ? 'backdrop visible' : 'backdrop'}></div>
-        <h1>Ecommerce Composable App with Web Fragments</h1>
-        <Banner />
-        <button className='btn-toggle-cart' onClick={toggleCart}>
-          <i className='fa-solid fa-cart-shopping'></i>
-        </button>
+        <div className="hero">
+          {/* <h1>Ecommerce Composable App with Web Fragments</h1> */}
+          <Banner />
+          <button className='btn-toggle-cart' onClick={toggleCart}>
+            <i className='fa-solid fa-cart-shopping'></i>
+          </button>
+        </div>
         <div className='layout'>
           {/* <ProductGrid /> */}
           {/*

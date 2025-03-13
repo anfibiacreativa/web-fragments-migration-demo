@@ -13,8 +13,8 @@ catalogs:
       specifier: 6.0.7
       version: 6.0.7
     web-fragments:
-      specifier: 0.4.1
-      version: 0.4.1
+      specifier: 0.4.2
+      version: 0.4.2
 
 importers:
 
@@ -347,7 +347,7 @@ importers:
         version: 2.8.1
       web-fragments:
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.4.2
       zone.js:
         specifier: ~0.14.3
         version: 0.14.10
@@ -524,7 +524,7 @@ importers:
         version: 7.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       web-fragments:
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.4.2
     devDependencies:
       '@eslint/js':
         specifier: ^9.19.0
@@ -570,7 +570,7 @@ importers:
         version: 5.0.1
       web-fragments:
         specifier: 'catalog:'
-        version: 0.4.1
+        version: 0.4.2
     devDependencies:
       '@playwright/test':
         specifier: ^1.49.1
@@ -6483,10 +6483,6 @@ packages:
   htmlparser2@8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
 
-  htmlrewriter@https://codeload.github.com/anfibiacreativa/htmlrewriter/tar.gz/e234d7a1c7b86e10ee1e8f271afca42058daef42:
-    resolution: {tarball: https://codeload.github.com/anfibiacreativa/htmlrewriter/tar.gz/e234d7a1c7b86e10ee1e8f271afca42058daef42}
-    version: 0.0.13
-
   http-assert@1.5.0:
     resolution: {integrity: sha512-uPpH7OKX4H25hBmU6G1jWNaqJGpTXxey+YOUizJUAgu0AjLUeC8D73hTrhvDS5D+GJN1DN1+hhc/eF/wpxtp0w==}
     engines: {node: '>= 0.8'}
@@ -10751,8 +10747,8 @@ packages:
   weak-lru-cache@1.2.2:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==}
 
-  web-fragments@0.4.1:
-    resolution: {integrity: sha512-feLSPlmwSLwh+M1qKdWL+BvXKZQ1vZ1igZ02ls2TSs9qqYi2q2eTjiYd7sydGuSlB6BcKfevoGaSkviC+o1CIg==}
+  web-fragments@0.4.2:
+    resolution: {integrity: sha512-/dBIomO6oBjjZxxa6ckdmMq2yah9WYcYeeDn4kizlHbUD4jzQDnfVqunuOBro0M/pHNvSBm8LupTNmby9ITnVg==}
 
   webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
@@ -10852,6 +10848,9 @@ packages:
   websocket-extensions@0.1.4:
     resolution: {integrity: sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==}
     engines: {node: '>=0.8.0'}
+
+  wf-htmlrewriter@0.0.13:
+    resolution: {integrity: sha512-ymlCpT94FPRo1eHGOoFgoLQfdJwofayAumP9Bcxl6XBZaoR0Qk1kAIvhsfXY1PADZs1Y6crbujQC8LnaMUi0OQ==}
 
   whatwg-encoding@2.0.0:
     resolution: {integrity: sha512-p41ogyeMUrw3jWclHWTQg1k05DSVXPLcVxRTYsXUk+ZooOCZLcoYgPZ/HL/D/N+uQPOtcp1me1WhBEaX02mhWg==}
@@ -19172,8 +19171,6 @@ snapshots:
       domutils: 3.2.2
       entities: 4.5.0
 
-  htmlrewriter@https://codeload.github.com/anfibiacreativa/htmlrewriter/tar.gz/e234d7a1c7b86e10ee1e8f271afca42058daef42: {}
-
   http-assert@1.5.0:
     dependencies:
       deep-equal: 1.0.1
@@ -24392,9 +24389,9 @@ snapshots:
 
   weak-lru-cache@1.2.2: {}
 
-  web-fragments@0.4.1:
+  web-fragments@0.4.2:
     dependencies:
-      htmlrewriter: https://codeload.github.com/anfibiacreativa/htmlrewriter/tar.gz/e234d7a1c7b86e10ee1e8f271afca42058daef42
+      htmlrewriter: wf-htmlrewriter@0.0.13
       writable-dom: https://codeload.github.com/web-fragments/writable-dom/tar.gz/5d461949c30843ffc79eb63a98c3c751aae985b6
 
   webidl-conversions@3.0.1: {}
@@ -24595,6 +24592,8 @@ snapshots:
       websocket-extensions: 0.1.4
 
   websocket-extensions@0.1.4: {}
+
+  wf-htmlrewriter@0.0.13: {}
 
   whatwg-encoding@2.0.0:
     dependencies:
