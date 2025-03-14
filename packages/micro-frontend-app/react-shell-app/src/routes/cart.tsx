@@ -10,22 +10,16 @@ function App() {
     <Layout>
       <div className='container'>
         <div className={isCartOpen ? 'backdrop visible' : 'backdrop'}></div>
-        <div className="hero">
-          {/* <h1>Ecommerce Composable App with Web Fragments</h1> */}
-          <Banner />
-          <button className='btn-toggle-cart' onClick={toggleCart}>
-            <i className='fa-solid fa-cart-shopping'></i>
-          </button>
-        </div>
+        <h1>Cart Standalone Fragment</h1>
+        <p>Standalone fragments are not bound to the shell app "location.history", and do not interact with the browser URL bar.</p>
+        <Banner />
+        <button className='btn-toggle-cart' onClick={toggleCart}>
+          <i className='fa-solid fa-cart-shopping'></i>
+        </button>
         <div className='layout'>
           {/* <ProductGrid /> */}
-          {/*
-// @ts-expect-error: Fragment outlet is not recognized by TypeScript */}
-          <web-fragment fragment-id="store" />
+          <web-fragment fragment-id="cart" />
           {/* <ShoppingCart /> */}
-          {/*
-// @ts-expect-error: Fragment outlet is not recognized by TypeScript */}
-          <web-fragment fragment-id="cart" src="/cart" />
         </div>
       </div>
     </Layout>

@@ -86,6 +86,13 @@ gateway.registerFragment({
   }),
 });
 
+gateway.registerFragment({
+  fragmentId: 'party-button',
+  prePiercingClassNames: [''],
+  endpoint: 'https://party-button.demos.web-fragments.dev',
+  routePatterns: ['/__wf/dev.web-fragments.demos.party-button/:_*', '/party-button/:_*'],
+});
+
 export function app(): express.Express {
   const app = express();
 
