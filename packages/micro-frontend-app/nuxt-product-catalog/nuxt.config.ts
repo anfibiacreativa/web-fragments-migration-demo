@@ -1,3 +1,5 @@
+import { defineNuxtConfig } from "nuxt/config";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
@@ -17,16 +19,25 @@ export default defineNuxtConfig({
     '/': { redirect: '/store/catalog' },
   },
   nitro: {
+    preset: "cloudflare-pages",
+
+    cloudflare: {
+      nodeCompat: true
+    },
+
     output: {
       dir: 'dist',
-      publicDir: 'dist/public',
+      publicDir: 'dist',
     },
     publicAssets: [
       {
-        dir: 'dist/public',
+        dir: 'dist/public/_fragment/nuxt/assets',
         baseURL: '/_fragment/nuxt/assets/',
       }
     ]
   },
   css: ['~/assets/styles.css'],
+  modules: ["nitro-cloudflare-dev"]
 })
+
+
