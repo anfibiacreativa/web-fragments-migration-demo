@@ -1,4 +1,9 @@
 {
-  // https://v3.nuxtjs.org/concepts/typescript
-  "extends": "./.nuxt/tsconfig.json"
+  // https://nuxt.com/docs/guide/concepts/typescript
+"extends": "./.nuxt/tsconfig.json",
+"compilerOptions": {
+    "types": [
+        "@cloudflare/workers-types/2023-07-01"
+    ]
+}
 }
